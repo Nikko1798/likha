@@ -7,4 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class Address extends Model
 {
     //
+    protected $guarded=[];
+    function personal_information(){
+        return $this->belongsTo(PersonalInformation::class);
+    }
 }

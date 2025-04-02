@@ -12,6 +12,12 @@
             />
         </div>
         <div class="sm:col-span-3">
+            <fwb-input v-model="educ.other_transmission" 
+            :disabled="educ.disableTransmission"
+            label="Transmission" 
+            placeholder="Manually input the transmission here" size="sm" />
+        </div>
+        <div class="sm:col-span-3">
             <fwb-input v-model="educ.mentor" 
             label="Mentor name" 
             placeholder="Enter mentor name" size="sm" />
@@ -36,18 +42,15 @@
     </div>
 </template>
 <script setup lang="ts">
+import { ref, watch, onMounted } from 'vue';
 import { FwbInput, FwbSelect, FwbButtonGroup, FwbButton } from "flowbite-vue";
-const transmissions = [
-    { value: "WIFE", name: "Wife" },
-    { value: "HUSBAND", name: "Husband" },
-    { value: "DAUGHTER", name: "Daughter" },
-    { value: "SON", name: "Son" }
-];
+import {transmissions} from '@/helpers/dropdownHelper';
+
 const props = defineProps({
     nonFormalEducations: Array
 });
 const addNonFormal = () => {
-    props.nonFormalEducations.push({ transmission: "", mentor: "", ordinal_generation: "", place_of_mentoring: "" });
+    props.nonFormalEducations.push({ transmission: "",other_transmission:"", mentor: "", ordinal_generation: "", place_of_mentoring: "", disableTransmission: true, });
 };
 
 const removeNonFormal = (index: number) => {
@@ -55,4 +58,19 @@ const removeNonFormal = (index: number) => {
         props.nonFormalEducations.splice(index, 1);
     }
 };
+
+watch(
+    () => props.nonFormalEducations,
+    (newNonFormalEducations) => {
+        newNonFormalEducations.forEach((educ) => {
+            if (educ.transmission === "OTHER") {
+                educ.disableTransmission = false;
+            } else {
+                educ.disableTransmission = true;
+                educ.other_transmission = "";
+            }
+        });
+    },
+    { deep: true }
+);
 </script>

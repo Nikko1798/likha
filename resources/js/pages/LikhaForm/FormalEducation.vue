@@ -37,16 +37,11 @@
 </template>
 <script setup lang="ts">
 import { FwbInput, FwbSelect, FwbButtonGroup, FwbButton } from "flowbite-vue";
+import {educationalLevels} from '@/helpers/dropdownHelper';
 const props = defineProps({
     FormalEducations: Array
 });
-const educationalLevels = [
-    { value: "ELEMENTARY", name: "Elementary" },
-    { value: "HIGHSCHOOL", name: "High School" },
-    { value: "COLLEGE", name: "College" },
-    { value: "POST-GRADUATE", name: "Post-Graduate" },
-    { value: "SPECIAL-STUDIES", name: "Special Studies" }
-];
+
 const addFormal = () => {
     props.FormalEducations.push({ education_level:"", course_or_study: "", school_name:"", years_attended: "" });
 };

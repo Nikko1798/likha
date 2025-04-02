@@ -61,7 +61,7 @@
         </div>
         <div class="sm:col-span-4">
             <fwb-select
-                v-model="modelValue.city"
+                v-model="modelValue.city_municipality"
                 :options="cityOptions"
                 label="Select your City"
             />
@@ -85,22 +85,8 @@
 import { reactive, defineExpose, computed, watch, onMounted, ref } from "vue";
 import { FwbInput, FwbSelect  } from 'flowbite-vue'
 import {getRegionOptions, getProvinceOption, getCitiesOption, getBarangayOption} from '@/helpers/addressHelpers';
+import {genders, ageGroup} from '@/helpers/dropdownHelper';
 
-const genders = [
-  { value: 'MALE', name: 'Male' },
-  { value: 'FEMALE', name: 'Female' },
-  { value: 'NON-BINARY', name: 'Non-binary' },
-  { value: 'PREFER NOT TO SAY', name: 'Prefer not to say' },
-]
-const ageGroup = [
-  { value: '17 OR BELOW', name: '17 or below' },
-  { value: '18 TO 24', name: '18 to 24' },
-  { value: '25 TO 34', name: '25 to 34' },
-  { value: '35 TO 44', name: '35 to 44' },
-  { value: '45 TO 54', name: '45 to 54' },
-  { value: '55 TO 64', name: '55 to 64' },
-  { value: '55 OR OVER', name: '65 or over' },
-]
 const props=defineProps(["modelValue"]);
 const emits=defineEmits(["update:modelValue"]);
 const regionOptions = ref([]);
@@ -114,17 +100,17 @@ onMounted(async () => {
 });
 watch(() => props.modelValue.region,async (newRegion) => {
     props.modelValue.province="";
-    props.modelValue.city="";
+    props.modelValue.city_municipality="";
     props.modelValue.barangay="";
     provinceOptions.value = await getProvinceOption(newRegion);
     cityOptions.value = await getCitiesOption(props.modelValue.region==='130000000' ? newRegion :props.modelValue.province);
 });
 watch(() => props.modelValue.province,async (newProvince) => {
-    props.modelValue.city="";
+    props.modelValue.city_municipality="";
     props.modelValue.barangay="";
     cityOptions.value = await getCitiesOption(newProvince);
 });
-watch(() => props.modelValue.city,async (newCity) => {
+watch(() => props.modelValue.city_municipality,async (newCity) => {
     props.modelValue.barangay="";
  
     barangayOptions.value = await getBarangayOption(newCity);

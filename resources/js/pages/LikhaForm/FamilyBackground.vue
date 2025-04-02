@@ -26,17 +26,10 @@
 <script setup lang="ts">
 import { defineProps } from "vue";
 import { FwbInput, FwbSelect, FwbButtonGroup, FwbButton } from "flowbite-vue";
-
+import {relation} from '@/helpers/dropdownHelper';
 const props = defineProps({
     familyMembers: Array
 });
-
-const relation = [
-    { value: "WIFE", name: "Wife" },
-    { value: "HUSBAND", name: "Husband" },
-    { value: "DAUGHTER", name: "Daughter" },
-    { value: "SON", name: "Son" }
-];
 
 const addFamilyMember = () => {
     props.familyMembers.push({ family_member_name: "", relation: "" });

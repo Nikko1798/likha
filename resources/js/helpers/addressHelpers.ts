@@ -1,6 +1,6 @@
 
 export const fetchJson = async (filename: string) => {
-    const response = await fetch(`/jsons/${filename}.json`);
+    const response = await fetch(`/likha/jsons/${filename}.json`);
     if (!response.ok) {
       throw new Error(`Failed to load ${filename}.json`);
     }
