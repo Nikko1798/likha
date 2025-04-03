@@ -82,7 +82,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, defineExpose, computed, watch, onMounted, ref } from "vue";
+import { reactive, defineExpose, computed, watch, onMounted, ref, watchEffect } from "vue";
 import { FwbInput, FwbSelect  } from 'flowbite-vue'
 import {getRegionOptions, getProvinceOption, getCitiesOption, getBarangayOption} from '@/helpers/addressHelpers';
 import {genders, ageGroup} from '@/helpers/dropdownHelper';
@@ -96,9 +96,15 @@ const barangayOptions = ref([]);
 // const provinceOptions = computed(() => getProvinceOption(props.modelValue.region));
 // const cityOptions=computed(()=>getCitiesOption(props.modelValue.region==='130000000' ? props.modelValue.region : props.modelValue.province ))
 onMounted(async () => {
-  regionOptions.value = await getRegionOptions();
+    regionOptions.value = await getRegionOptions();
+    provinceOptions.value = await getProvinceOption(props.modelValue.region);
+    cityOptions.value = await getCitiesOption(props.modelValue.province || props.modelValue.region);
+    barangayOptions.value=await getBarangayOption(props.modelValue.city_municipality)
+
 });
+
 watch(() => props.modelValue.region,async (newRegion) => {
+    
     props.modelValue.province="";
     props.modelValue.city_municipality="";
     props.modelValue.barangay="";

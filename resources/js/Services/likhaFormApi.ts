@@ -54,3 +54,31 @@ export const insertOrUpdateStepTwo=(formData, id)=>{
       return error;
   });
 }
+
+export const insertOrUpdateStepThree=(formData, id)=>{
+  return axios.post(route('form.createOrUpdateFormalEducation', {id:id}), formData)
+  .then((response) => {
+      success("Step three details inserted successfully")
+      return response.data;
+  })
+  .catch((error) => {
+    console.log(error);
+    let errorStr=getErrorStr(error.response.data.errors);
+      warning(errorStr)
+      return error;
+  });
+}
+
+export const insertOrUpdateStepFour=(formData, id)=>{
+  return axios.post(route('form.createOrUpdateNonFormalEducation', {id:id}), formData)
+  .then((response) => {
+      success("Step four details inserted successfully")
+      return response.data;
+  })
+  .catch((error) => {
+    console.log(error);
+    let errorStr=getErrorStr(error.response.data.errors);
+      warning(errorStr)
+      return error;
+  });
+}

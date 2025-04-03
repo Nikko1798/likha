@@ -7,6 +7,7 @@ use App\Helpers\ResponseHelper;
 use App\Models\PersonalInformation;
 use App\Models\AddressDb;
 use App\Models\FamilyBackground;
+use App\Models\EducationalBackground;
 
 use Illuminate\Support\Str;
 class LikhaFormService
@@ -38,6 +39,7 @@ class LikhaFormService
                 'region'=>$region->name,
                 'province' => $province->name,
                 'city_municipality' => $city->name,
+                'barangay' => $barangay->name,
                 'street' => $request['street']
             ]);
             $step_one = $personalInfo->load('addresses');
@@ -76,6 +78,7 @@ class LikhaFormService
                 'region' => $region->name,
                 'province' => $province->name,
                 'city_municipality' => $city->name,
+                'barangay' => $barangay->name,
                 'street' => $request['street']
             ]);
             $step_one = $personalInfo->load('addresses');
@@ -106,13 +109,53 @@ class LikhaFormService
                 'relation' => $item['relation'],
                 'name' => $item['family_member_name'],
                 'personal_information_id' => $personalInfo->id,
-                'created_at' => now(),
-                'updated_at' => now(),
             ], $familyBackgrounds);
     
             FamilyBackground::insert($data);
         }
     }
+    function createOrUpdateNonFormalEducation($personalInfo, $request){
+        $NonformalEducation = $request->all(); // Ensure we get an array
+        if($personalInfo->current_step<=3){
+            $personalInfo->update(['current_step'=>4]);
+        }
+        if (!empty($NonformalEducation)) {
+            
+            EducationalBackground::where('type', 'NONFORMAL')->delete();
+ 
+            $data = array_map(fn($item) => [
+                'type' => 'NONFORMAL',
+                'transmission'=>$item['transmission'],
+                'other_transmission'=>$item['other_transmission'],
+                'mentor_name'=>$item['mentor'],
+                'ordinal_generation'=>$item['ordinal_generation'],
+                'place_of_mentoring'=>$item['place_of_mentoring'],
+                'personal_information_id' => $personalInfo->id,
+            ], $NonformalEducation);
     
-
+            EducationalBackground::insert($data);
+        }
+    }
+    
+    function createOrUpdateFormalEducation($personalInfo, $request){
+        $formalEducation = $request->all(); // Ensure we get an array
+        if($personalInfo->current_step<=2){
+            $personalInfo->update(['current_step'=>3]);
+        }
+        if (!empty($formalEducation)) {
+            
+            EducationalBackground::where('type', 'FORMAL')->delete();
+    
+            $data = array_map(fn($item) => [
+                'type' => 'FORMAL',
+                'education_level' => $item['education_level'],
+                'course_or_study' => $item['course_or_study'],
+                'school_name' => $item['school_name'],
+                'years'=>$item['years_attended'],
+                'personal_information_id' => $personalInfo->id,
+            ], $formalEducation);
+    
+            EducationalBackground::insert($data);
+        }
+    }
 }
