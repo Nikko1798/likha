@@ -11,10 +11,10 @@ import {submitStepOne, insertOrUpdateStepTwo} from '@/Services/likhaFormApi';
 import { useLikhaForm } from '@/Services/likhaFormService';
 import Loader from '@/components/Loader.vue'; // Import loader
 const props = defineProps({
-    personalInfo: Array,
-    family_background: Array,
-    formalEducation: Array,
-    NonformalEducation: Array,
+    personalInfo: Object,
+    family_background: Object,
+    formalEducation: Object,
+    NonformalEducation: Object,
 });
 const loadShow=ref(props.isLoading)
 const { personalInfoForm, familyMembers, ArtisanCraftsInfo, nonFormalEducations,FormalEducations, artsOrCraft, getMembers, getformalEducation, getNonformalEducation,

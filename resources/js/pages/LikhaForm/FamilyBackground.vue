@@ -28,14 +28,14 @@ import { defineProps } from "vue";
 import { FwbInput, FwbSelect, FwbButtonGroup, FwbButton } from "flowbite-vue";
 import {relation} from '@/helpers/dropdownHelper';
 const props = defineProps({
-    familyMembers: Array
+    familyMembers: Object
 });
 
 const addFamilyMember = () => {
     props.familyMembers.push({ family_member_name: "", relation: "" });
 };
 
-const removeFamilyMember = (index: number) => {
+const removeFamilyMember = (index: String) => {
     if (props.familyMembers.length > 1) {
         props.familyMembers.splice(index, 1);
     }

@@ -39,14 +39,14 @@
 import { FwbInput, FwbSelect, FwbButtonGroup, FwbButton } from "flowbite-vue";
 import {educationalLevels} from '@/helpers/dropdownHelper';
 const props = defineProps({
-    FormalEducations: Array
+    FormalEducations: Object
 });
 
 const addFormal = () => {
     props.FormalEducations.push({ education_level:"", course_or_study: "", school_name:"", years_attended: "" });
 };
 
-const removeFormal = (index: number) => {
+const removeFormal = (index: String) => {
     if (props.FormalEducations.length > 1) {
         props.FormalEducations.splice(index, 1);
     }

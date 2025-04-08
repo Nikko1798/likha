@@ -63,8 +63,10 @@ export function useLikhaForm(props) {
     const familyMembers = ref([{ family_member_name: "", relation: "" }]);
 
     let originalFamilyMembers = reactive([]);
+    let originalFormalEduc = reactive([]);
+    let originalNonFormalEduc = reactive([]);
    
-    const getMembers = () => {
+    const getMembers = (() => {
         if (props.family_background?.family_backgrounds?.length) { 
             familyMembers.value = props.family_background.family_backgrounds.map(member => ({
                 family_member_name: member.name,
@@ -75,8 +77,10 @@ export function useLikhaForm(props) {
             console.log(originalFamilyMembers)
         }
         
-    };
-    const getformalEducation=()=>{
+    });
+    
+    
+    const getformalEducation=(()=>{
         if (props.formalEducation && props.formalEducation.length > 0) 
         {
             FormalEducations.value=[];
@@ -84,9 +88,10 @@ export function useLikhaForm(props) {
                 education_level:educ.education_level||"", course_or_study: educ.course_or_study||"",
                 school_name:educ.school_name||"", years_attended: educ.years||""
             }));
+            originalFormalEduc=JSON.parse(JSON.stringify(FormalEducations.value)); 
         }
-    }
-    const getNonformalEducation=()=>{
+    });
+    const getNonformalEducation=(()=>{
         if (props.NonformalEducation && props.NonformalEducation.length > 0) {
             nonFormalEducations.value = props.NonformalEducation.map(educ => ({
                 transmission: educ.transmission || "", 
@@ -96,10 +101,11 @@ export function useLikhaForm(props) {
                 place_of_mentoring: educ.place_of_mentoring || "", 
                 disableTransmission: !!educ.other_transmission // Convert to boolean
             }));
+            originalNonFormalEduc=JSON.parse(JSON.stringify(nonFormalEducations.value)); 
         }
         
-    }
-    const submitStepOneForm = () => {
+    });
+    const submitStepOneForm = (() => {
         submitStepOne(toRaw(personalInfoForm), props.personalInfo).then((response)=>{
             if(response.status!="422")
             {
@@ -107,41 +113,85 @@ export function useLikhaForm(props) {
             }
             isLoading.value=false
         });
-    };
-    const insertOrUpdateStepTwoForm = () => {
+    });
+    const insertOrUpdateStepTwoForm = (() => {
         insertOrUpdateStepTwo(toRaw(familyMembers.value), props.personalInfo.id).then((response)=>{
             if(response.status!="422")
             {
+                
+                originalFamilyMembers = JSON.parse(JSON.stringify(familyMembers.value)); 
                 nextAction();
             }
             isLoading.value=false
         });
-    };
-    const insertOrUpdateStepThreeForm = () => {
+    });
+    const insertOrUpdateStepThreeForm = (() => {
         insertOrUpdateStepThree(toRaw(FormalEducations.value), props.personalInfo.id).then((response)=>{
             if(response.status!="422")
             {
+                originalFormalEduc=JSON.parse(JSON.stringify(FormalEducations.value)); 
+                console.log(JSON.parse(JSON.stringify(FormalEducations.value)))
                 nextAction();
             }
             isLoading.value=false
         });
-    };
-    const insertOrUpdateStepFourForm = () => {
+    });
+    const insertOrUpdateStepFourForm = (() => {
         insertOrUpdateStepFour(toRaw(nonFormalEducations.value), props.personalInfo.id).then((response)=>{
             if(response.status!="422")
             {
+                originalNonFormalEduc=JSON.parse(JSON.stringify(nonFormalEducations.value)); 
                 nextAction();
             }
             isLoading.value=false
         });
+    });
+    const isFamilyBgEdited = (() => {
+        if (!familyMembers.value || !originalFamilyMembers || familyMembers.value.length !== originalFamilyMembers.length) {
+            return true; // Assuming it's edited if lengths don't match
+          }
+          return familyMembers.value.some((member, index) => {
+            // Ensure we don't get an error if originalFamilyMembers[index] is undefined
+            const originalMember = originalFamilyMembers[index];
+            return (
+              member.family_member_name !== originalMember?.family_member_name ||
+              member.relation !== originalMember?.relation
+            );
+          });
+    });
+    const isFormalEducEdited = () => {
+        if (!FormalEducations.value || !originalFormalEduc || FormalEducations.value.length !== originalFormalEduc.length) {
+            
+            return true; // Assuming it's edited if lengths don't match
+          }
+          return FormalEducations.value.some((educ, index) => {
+            // Ensure we don't get an error if originalFamilyMembers[index] is undefined
+            const originaFormalEduc = originalFormalEduc[index];
+            return (
+                // education_level:"", course_or_study: "", school_name:"", years_attended
+                educ.education_level !== originaFormalEduc?.education_level ||
+                educ.course_or_study !== originaFormalEduc?.course_or_study ||
+                educ.school_name !== originaFormalEduc?.school_name ||
+                educ.years_attended !== originaFormalEduc?.years_attended 
+            );
+          });
     };
-    const isFamilyBgEdited = computed(() => {
-        return familyMembers.value.some((member, index) => {
-          return (
-            member.family_member_name !== originalFamilyMembers[index].family_member_name ||
-            member.relation !== originalFamilyMembers[index].relation
-          );
-        });
+    const isNonFormalEducEdited = (() => {
+        if (!nonFormalEducations.value || !originalNonFormalEduc || nonFormalEducations.value.length !== originalNonFormalEduc.length) {
+            
+            return true; // Assuming it's edited if lengths don't match
+          }
+          return nonFormalEducations.value.some((educ, index) => {
+            // Ensure we don't get an error if originalFamilyMembers[index] is undefined
+            const originaNonFormalEduc = originalNonFormalEduc[index];
+            return (
+                educ.transmission !== originaNonFormalEduc?.transmission ||
+                educ.other_transmission !== originaNonFormalEduc?.other_transmission ||
+                educ.mentor !== originaNonFormalEduc?.mentor ||
+                educ.ordinal_generation !== originaNonFormalEduc?.ordinal_generation ||
+                educ.place_of_mentoring !== originaNonFormalEduc?.place_of_mentoring 
+            );
+          });
     });
     const isPersonalInfoEdited = computed(() => {
         return Object.keys(personalInfoForm).some(
@@ -149,7 +199,7 @@ export function useLikhaForm(props) {
         );
     });
 
-    const nextStep = () => {
+    const nextStep = (() => {
         isLoading.value=true
         switch (activeStep.value) {
             case 0:
@@ -163,42 +213,56 @@ export function useLikhaForm(props) {
                 }
                 break;
             case 1:
-                // if(isFamilyBgEdited.value)
-                // {
+                if(isFamilyBgEdited())
+                {
                     insertOrUpdateStepTwoForm();
-                // }
-                // else{
-                //     nextAction();
-                //     isLoading.value=false
-                // }
+                }
+                else{
+                    nextAction();
+                    isLoading.value=false
+                }
                 break;
             case 2:
-                insertOrUpdateStepThreeForm();
+                if(isFormalEducEdited())
+                {
+                    insertOrUpdateStepThreeForm();
+                }
+                else{
+                    nextAction();
+                    isLoading.value=false
+                }
                 break;
             case 3:
-                insertOrUpdateStepFourForm();
+                if(isNonFormalEducEdited())
+                {
+                    insertOrUpdateStepFourForm();
+                }
+                else{
+                    nextAction();
+                    isLoading.value=false
+                }
                 break;
             default:
                 console.log(familyMembers)
                 break;
         }
        
-    };
-    const nextAction= () =>{
+    });
+    const nextAction= (() =>{
         if (activeStep.value < steps.value.length - 1) {
             steps.value[activeStep.value].active = false;
             activeStep.value++;
             steps.value[activeStep.value].active = true;
         }
-    };
+    });
     
-    const prevStep = () => {
+    const prevStep = (() => {
         if (activeStep.value > 0) {
             steps.value[activeStep.value].active = false;
             activeStep.value--;
             steps.value[activeStep.value].active = true;
         }
-    };
+    });
     return {
         personalInfoForm,
         familyMembers,

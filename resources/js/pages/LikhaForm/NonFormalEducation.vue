@@ -47,13 +47,13 @@ import { FwbInput, FwbSelect, FwbButtonGroup, FwbButton } from "flowbite-vue";
 import {transmissions} from '@/helpers/dropdownHelper';
 
 const props = defineProps({
-    nonFormalEducations: Array
+    nonFormalEducations: Object
 });
 const addNonFormal = () => {
     props.nonFormalEducations.push({ transmission: "",other_transmission:"", mentor: "", ordinal_generation: "", place_of_mentoring: "", disableTransmission: true, });
 };
 
-const removeNonFormal = (index: number) => {
+const removeNonFormal = (index: String) => {
     if (props.nonFormalEducations.length > 1) {
         props.nonFormalEducations.splice(index, 1);
     }

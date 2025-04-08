@@ -76,7 +76,7 @@ import { getRegionOptions, getProvinceOption, getCitiesOption, getBarangayOption
 import {ipc, artsAndCraft, productMaterial, artSpecializationOptions, relatedPracticeOptions} from '@/helpers/dropdownHelper';
 
 const props = defineProps({
-    artsOrCraft: Array
+    artsOrCraft: Object
 });
 
 const regionOptions = ref([]);
@@ -132,7 +132,7 @@ const addartsOrCraft = () => {
     props.artsOrCraft.push({ family_member_name: "", relation: "" });
 };
 
-const removeartsOrCraft = (index: number) => {
+const removeartsOrCraft = (index: String) => {
     if (props.artsOrCraft.length > 1) {
         props.artsOrCraft.splice(index, 1);
     }

@@ -82,7 +82,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, defineExpose, computed, watch, onMounted, ref, watchEffect } from "vue";
+import { reactive, computed, watch, onMounted, ref, watchEffect } from "vue";
 import { FwbInput, FwbSelect  } from 'flowbite-vue'
 import {getRegionOptions, getProvinceOption, getCitiesOption, getBarangayOption} from '@/helpers/addressHelpers';
 import {genders, ageGroup} from '@/helpers/dropdownHelper';
