@@ -6,6 +6,7 @@ import FamilyBackground from './FamilyBackground.vue';
 import nonFormalEducation from './NonFormalEducation.vue';
 import ArtisanCrafts from './ArtisanCrafts.vue';
 import FormalEducation from './FormalEducation.vue';
+import DataPrivacy from './DataPrivacy.vue';
 import OtherArt from './otherArt.vue';
 import {submitStepOne, insertOrUpdateStepTwo} from '@/Services/likhaFormApi';
 import { useLikhaForm } from '@/Services/likhaFormService';
@@ -15,6 +16,8 @@ const props = defineProps({
     family_background: Object,
     formalEducation: Object,
     NonformalEducation: Object,
+    artisan: Object,
+    primaryCraft: Object
 });
 const loadShow=ref(props.isLoading)
 const { personalInfoForm, familyMembers, ArtisanCraftsInfo, nonFormalEducations,FormalEducations, artsOrCraft, getMembers, getformalEducation, getNonformalEducation,
@@ -24,6 +27,7 @@ onMounted(()=>{
     getNonformalEducation()
     getformalEducation()
     getMembers()
+    console.log(props.primaryCraft)
 });
 
 </script>
@@ -59,12 +63,13 @@ onMounted(()=>{
 
             <!-- Scrollable Content -->
             <div class="flex-1 overflow-y-auto">
-                <PersonalInformation v-if="activeStep === 0" v-model="personalInfoForm" />
-                <FamilyBackground v-if="activeStep === 1" v-model:familyMembers="familyMembers" />
-                <FormalEducation v-if="activeStep===2" v-model:FormalEducations="FormalEducations" />
-                <nonFormalEducation v-if="activeStep === 3" v-model:nonFormalEducations="nonFormalEducations" />
-                <ArtisanCrafts v-if="activeStep === 4" v-model="ArtisanCraftsInfo" />
-                <OtherArt v-if="activeStep === 5" v-model:artsOrCraft="artsOrCraft" />
+                <DataPrivacy v-if="activeStep === 0"></DataPrivacy>
+                <PersonalInformation v-if="activeStep === 1" v-model="personalInfoForm" />
+                <FamilyBackground v-if="activeStep === 2" v-model:familyMembers="familyMembers" />
+                <FormalEducation v-if="activeStep===3" v-model:FormalEducations="FormalEducations" />
+                <nonFormalEducation v-if="activeStep === 4" v-model:nonFormalEducations="nonFormalEducations" />
+                <ArtisanCrafts v-if="activeStep === 5" v-model="ArtisanCraftsInfo" />
+                <OtherArt v-if="activeStep === 6" v-model:artsOrCraft="artsOrCraft" />
             </div>
 
             <!-- Navigation Buttons (Sticky) -->

@@ -14,12 +14,6 @@
                         <div class="sm:col-span-12">
                             <video ref="videoElement" width="640" height="480" autoplay></video>
                         </div>
-                        <div class="sm:col-span-12">
-                            <fwb-button-group>
-                                <fwb-button>Button Default</fwb-button>
-                                <fwb-button color="purple">Button Purple</fwb-button>
-                            </fwb-button-group>
-                        </div>
                     </div>
                 </div>
             </template>
@@ -39,7 +33,7 @@ const closeModal = () => emit('close') // the closeModal() will be called in the
 
 const props = defineProps<{
     isOpen: boolean,
-    imageSrc: String,
+    imageSrc: File | null,
 }>()
 const captureImage = () => {
   if (!videoElement.value) return
@@ -52,8 +46,16 @@ const captureImage = () => {
   if (!ctx) return
 
   ctx.drawImage(videoElement.value, 0, 0, canvas.width, canvas.height)
-  capturedImage.value = canvas.toDataURL('image/png')
-  emit('update:imageSrc', canvas.toDataURL('image/png'))
+  canvas.toBlob((blob) => {
+  if (blob) {
+      const file = new File([blob], 'captured-image.png', { type: 'image/png' });
+      //capturedImage.value = file; // now it's a File, ready for upload
+      emit('update:imageSrc', file)
+    } else {
+      console.error('Failed to convert canvas to blob');
+    }
+  }, 'image/png');
+
   closeModal();
 }
 const startCamera = async () => {
@@ -64,6 +66,7 @@ const startCamera = async () => {
     // Set the video element's srcObject to the camera stream
     if (videoElement.value) {
       videoElement.value.srcObject = cameraStream;
+      videoElement.value.style.transform = "scaleX(-1)";
     }
     stream.value = cameraStream;
   } catch (error) {

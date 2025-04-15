@@ -9,11 +9,13 @@ use App\Http\Requests\PersonalInfoRequest;
 use App\Http\Requests\FamilyBackgroundRequest;
 use App\Http\Requests\NonFormalEducationRequest;
 use App\Http\Requests\FormalEducationRequest;
+use App\Http\Requests\ArtisanRequest;
 
 use App\Services\LikhaForm\LikhaFormService;
 
 use App\Models\PersonalInformation;
 use App\Models\EducationalBackground;
+use App\Models\Craft;
 
 class LikhaFormController extends Controller
 {
@@ -44,12 +46,25 @@ class LikhaFormController extends Controller
             $family_background=$personalInfo->load('family_backgrounds');
             $formalEducation=EducationalBackground::where('type', 'FORMAL')->where('personal_information_id', $personalInfo->id)->get();
             $NonformalEducation=EducationalBackground::where('type', 'NONFORMAL')->where('personal_information_id', $personalInfo->id)->get();
+            $artisan=$personalInfo->load('artisan_info');
+            $primaryCraft=Craft::select('crafts.specialization_name', 'crafts.associative_narrative_of_production',
+            'crafts.product_making_process', 'crafts.product_image_pallete', 'crafts.vocabularies',
+            'region.codevalue as region', 'province.codevalue as province', 'city.codevalue as city_municipality', 
+            'barangay.codevalue as barangay', 'crafts.sitio')
+            ->leftJoin('address_dbs as region', 'region.codevalue', 'crafts.region')
+            ->leftJoin('address_dbs as province', 'province.codevalue', 'crafts.province')
+            ->leftJoin('address_dbs as city', 'city.codevalue', 'crafts.city_municipality')
+            ->leftJoin('address_dbs as barangay', 'barangay.codevalue', 'crafts.barangay')
+            ->where('crafts.specialization_rank','1')
+            ->where('crafts.personal_information_id', $personalInfo->id)->first();
             
             return Inertia::render('LikhaForm/index', [
                 'personalInfo' => $personalInfo,
                 'family_background' => $family_background,
                 'formalEducation' => $formalEducation,
-                'NonformalEducation'=>$NonformalEducation
+                'NonformalEducation'=>$NonformalEducation,
+                'artisan'=>$artisan,
+                'primaryCraft'=>$primaryCraft
             ]);
         }
         else{
@@ -75,5 +90,9 @@ class LikhaFormController extends Controller
     public function createOrUpdateNonFormalEducation(PersonalInformation $personalInfo, NonFormalEducationRequest $request)
     {
         return $this->likhaFormService->createOrUpdateNonFormalEducation($personalInfo, $request);
+    }
+    public function createOrUpdateArtisan(PersonalInformation $personalInfo, ArtisanRequest $request)
+    {
+        return $this->likhaFormService->createOrUpdateArtisan($personalInfo, $request);
     }
 }

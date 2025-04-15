@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Craft extends Model
 {
     //
+    protected $guarded=[];
     function personal_information(){
         return $this->belongsTo(PersonalInformation::class);
     }

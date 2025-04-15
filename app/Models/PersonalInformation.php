@@ -23,4 +23,7 @@ class PersonalInformation extends Model
     function family_backgrounds(){
         return $this->hasMany(FamilyBackground::class);
     }
+    function artisan_info(){
+        return $this->hasOne(ArtisanInfo::class);
+    }
 }

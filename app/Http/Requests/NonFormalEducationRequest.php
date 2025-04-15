@@ -19,7 +19,6 @@ class NonFormalEducationRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
-    // const nonFormalEducations=ref([{transmission: "", other_transmission:"", mentor: "", ordinal_generation: "", place_of_mentoring: "", disableTransmission: true}])
  
     public function rules(): array
     {
@@ -35,11 +34,11 @@ class NonFormalEducationRequest extends FormRequest
     public function attributes()
     {
         return [
-            'transmission' => 'Transmission', 
-            'other_transmission' => 'Other transmission', 
-            'mentor' => 'Mentor', 
-            'ordinal_generation' => 'Ordinal Generation',
-            'place_of_mentoring' => 'Place of mentoring',
+            '*.transmission' => 'Transmission', 
+            '*.other_transmission' => 'Other transmission', 
+            '*.mentor' => 'Mentor', 
+            '*.ordinal_generation' => 'Ordinal Generation',
+            '*.place_of_mentoring' => 'Place of mentoring',
         ];
     }
 }

@@ -8,12 +8,17 @@ use App\Models\PersonalInformation;
 use App\Models\AddressDb;
 use App\Models\FamilyBackground;
 use App\Models\EducationalBackground;
+use App\Models\ArtisanInfo;
+use App\Models\Craft;
 
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 class LikhaFormService
 {
     function insertPersonalInfo($request)
     {
+        
         try {
             $uuid=Str::uuid();
             $region=AddressDb::select('name')->where('codename', 'REGION')->where('codevalue', $request['region'])->first();
@@ -46,8 +51,6 @@ class LikhaFormService
          
             // return redirect()->route('form.draft', ['uuid' => $uuid]);
             return ResponseHelper::success($uuid, 'User created successfully!', 201);
-
-
         }
         catch (\Exception $e) {
             
@@ -98,8 +101,8 @@ class LikhaFormService
     function insertOrUpdateFamilyBackground($personalInfo, $request)
     {
         $familyBackgrounds = $request->all(); // Ensure we get an array
-        if($personalInfo->current_step<=1){
-            $personalInfo->update(['current_step'=>2]);
+        if($personalInfo->current_step<=2){
+            $personalInfo->update(['current_step'=>3]);
         }
         if (!empty($familyBackgrounds)) {
             
@@ -114,10 +117,33 @@ class LikhaFormService
             FamilyBackground::insert($data);
         }
     }
-    function createOrUpdateNonFormalEducation($personalInfo, $request){
-        $NonformalEducation = $request->all(); // Ensure we get an array
+  
+    
+    function createOrUpdateFormalEducation($personalInfo, $request){
+        $formalEducation = $request->all(); // Ensure we get an array
         if($personalInfo->current_step<=3){
             $personalInfo->update(['current_step'=>4]);
+        }
+        if (!empty($formalEducation)) {
+            
+            EducationalBackground::where('type', 'FORMAL')->delete();
+    
+            $data = array_map(fn($item) => [
+                'type' => 'FORMAL',
+                'education_level' => $item['education_level'],
+                'course_or_study' => $item['course_or_study'],
+                'school_name' => $item['school_name'],
+                'years'=>$item['years_attended'],
+                'personal_information_id' => $personalInfo->id,
+            ], $formalEducation);
+    
+            EducationalBackground::insert($data);
+        }
+    }
+    function createOrUpdateNonFormalEducation($personalInfo, $request){
+        $NonformalEducation = $request->all(); // Ensure we get an array
+        if($personalInfo->current_step<=4){
+            $personalInfo->update(['current_step'=>5]);
         }
         if (!empty($NonformalEducation)) {
             
@@ -136,26 +162,63 @@ class LikhaFormService
             EducationalBackground::insert($data);
         }
     }
-    
-    function createOrUpdateFormalEducation($personalInfo, $request){
-        $formalEducation = $request->all(); // Ensure we get an array
-        if($personalInfo->current_step<=2){
-            $personalInfo->update(['current_step'=>3]);
+    function createOrUpdateArtisan($personalInfo, $request){
+      
+        try{
+            DB::transaction(function () use ($personalInfo, $request) {
+                if($personalInfo->current_step<=5){
+                    $personalInfo->update(['current_step'=>6]);
+                }
+                if (!empty($request)) {
+                    $artisan=ArtisanInfo::updateOrCreate(
+                        ['personal_information_id' => $personalInfo->id], // condition
+                        [                            // data to update or insert
+                            'personal_information_id' => $personalInfo->id,
+                            'artisan_name' => $request['artisan_name'],
+                            'indegenous_people_community' => $request['indiginous_people_community'],
+                            'other_indegenous_people_community' => $request['other_ipc']
+                        ]   
+                    );
+                    $primaryCraft=Craft::updateOrCreate(
+                        ['personal_information_id' => $personalInfo->id],
+                        [
+                            'personal_information_id' => $personalInfo->id,
+                            'specialization_rank'=>1,
+                            'specialization_name'=>$request['primary_art'],
+                            'region'=>$request['region'],
+                            'province'=>$request['province'],
+                            'city_municipality'=>$request['city'],
+                            'barangay'=>$request['barangay'],
+                            'associative_narrative_of_production'=>$request['associative_narrative_of_production'],
+                            'product_making_process'=>$request['product_making_process'],
+                            'product_making_process_file'=>$request['product_making_process_file'],
+                            'product_image_pattern'=>self::uploadArtisanProductImage($request, $artisan),
+                            'product_image_pallete'=>$request['product_color_pallete'],
+                            'vocabularies'=>$request['vocabularies'],
+                            'vocabularies_file'=>$request['vocabularies_file'],
+                        ]
+                    );
+                    
+                    DB::commit();
+                }
+            }, 5);
         }
-        if (!empty($formalEducation)) {
+        catch(Exception $e){
             
-            EducationalBackground::where('type', 'FORMAL')->delete();
-    
-            $data = array_map(fn($item) => [
-                'type' => 'FORMAL',
-                'education_level' => $item['education_level'],
-                'course_or_study' => $item['course_or_study'],
-                'school_name' => $item['school_name'],
-                'years'=>$item['years_attended'],
-                'personal_information_id' => $personalInfo->id,
-            ], $formalEducation);
-    
-            EducationalBackground::insert($data);
+        }
+    }
+    function uploadArtisanProductImage($request, $artisan){
+        if ($request->hasFile('product_image')) {
+            $file = $request->file('product_image');
+            $filename = 'product_image_pattern_' . $artisan->id . '.' . $file->getClientOriginalExtension();
+            $folder='uploads';
+            $fullPath = $folder . '/' . $filename;
+            if(Storage::disk('public')->exists($fullPath))
+            {   
+                Storage::disk('public')->delete($fullPath);
+            }
+            $path = $file->storeAs($folder, $filename, 'public');
+            return $filename;
         }
     }
 }

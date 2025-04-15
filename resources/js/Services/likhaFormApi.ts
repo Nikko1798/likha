@@ -70,6 +70,7 @@ export const insertOrUpdateStepThree=(formData, id)=>{
 }
 
 export const insertOrUpdateStepFour=(formData, id)=>{
+  
   return axios.post(route('form.createOrUpdateNonFormalEducation', {id:id}), formData)
   .then((response) => {
       success("Step four details inserted successfully")
@@ -82,3 +83,28 @@ export const insertOrUpdateStepFour=(formData, id)=>{
       return error;
   });
 }
+
+export const insertOrUpdateStepFive=(ArtisanCraftsInfo, id)=>{
+  const formData = new FormData();
+  for (const key in ArtisanCraftsInfo) {
+    const value = ArtisanCraftsInfo[key];
+
+    if (value instanceof File || value instanceof Blob) {
+      formData.append(key, value);
+    } else if (value !== null && value !== undefined) {
+      formData.append(key, value);
+    }
+  }
+  console.log(formData)
+  return axios.post(route('form.createOrUpdateArtisan', {id:id}), formData)
+  .then((response) => {
+      success("Step five details inserted successfully")
+      return response.data;
+  })
+  .catch((error) => {
+    console.log(error);
+    let errorStr=getErrorStr(error.response.data.errors);
+      warning(errorStr)
+      return error;
+  });
+};

@@ -32,10 +32,10 @@ class FormalEducationRequest extends FormRequest
     public function attributes()
     {
         return [
-            'education_level' => 'Level of education', 
-            'course_or_study' => 'Course or Field of study', 
-            'years' => 'Years attendd',
-            'school_name' => 'School attended',
+            '*.education_level' => 'Level of education', 
+            '*.course_or_study' => 'Course or Field of study', 
+            '*.years_attended' => 'Years attended',
+            '*.school_name' => 'School attended',
         ];
     }
 }

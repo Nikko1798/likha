@@ -24,7 +24,6 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps } from "vue";
 import { FwbInput, FwbSelect, FwbButtonGroup, FwbButton } from "flowbite-vue";
 import {relation} from '@/helpers/dropdownHelper';
 const props = defineProps({

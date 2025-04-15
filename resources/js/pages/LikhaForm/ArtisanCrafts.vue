@@ -107,13 +107,14 @@
                     <div class="sm:col-span-6">
                         <fwb-textarea
                             v-model="modelValue.product_color_pallete"
-                            :rows="4"
+                            :rows="5"
                             label="Product Color Palletes"
                             placeholder="Write the list of color palletes here."
                         />
+                        <a href="https://www.pantone-colours.com/" target="_blank">Reference: https://www.pantone-colours.com/</a>
                     </div>
                     <div class="sm:col-span-6 flex flex-col items-start space-y-2">
-                        <canvas id="productImage" width="250" height="250" style="border:1px solid #000000;"></canvas>
+                        <canvas id="productImage" width="300" height="250" style="border:1px solid #000000;"></canvas>
 
                         <fwb-button-group>
                             <fwb-button color="purple" @click="openModal('cameraModal')">Open Camera</fwb-button>
@@ -187,6 +188,9 @@ import {ipc, artsAndCraft, relatedPracticeOptions} from '@/helpers/dropdownHelpe
 import ColorThief from "color-thief-ts";
 import Camera from './CameraForProduct.vue'
 import {useModal} from '@/helpers/modals';
+import nearestPantone from 'nearest-pantone'
+import colorConverter from 'simple-color-converter'
+
 
 const props=defineProps(["modelValue"]);
 const emits=defineEmits(["update:modelValue"]);
@@ -195,75 +199,85 @@ const regionOptions = ref([]);
 const provinceOptions = ref([]);
 const cityOptions = ref([]);
 const barangayOptions = ref([]);
+const imageSrc = ref<File | null>(null);
 
-const imageSrc = ref('');
 const imgStrFromCam = ref<string | null>(null)
 const fileInput = ref<HTMLInputElement | null>(null)
 
 const colors = ref([]);
 const { modals, openModal, closeModal } = useModal()
 
-watch(imageSrc, (newUrl) => {
-    drawImageFromDataUrl(newUrl)
+watch(imageSrc, (newFile) => {
+
+    drawImageFromFile(newFile)
 })
-function drawImageFromDataUrl(newUrl): void {
-  const canvas = document.getElementById('productImage') as HTMLCanvasElement
-  const ctx = canvas.getContext('2d')
+function drawImageFromFile(file: File): void {
 
-  if (!ctx) {
-    console.error('Failed to get 2D context')
-    return
-  }
+    const canvas = document.getElementById('productImage') as HTMLCanvasElement;
+    const ctx = canvas.getContext('2d');
+    const filetoUpload = new File([file], 'capture.jpg', { type: 'image/jpeg' });
+    props.modelValue.product_image=filetoUpload;
+    if (!ctx) {
+    console.error('Failed to get 2D context');
+    return;
+    }
 
-  const image = new Image()
-  image.src = newUrl
+    const url = URL.createObjectURL(file);
+    const image = new Image();
+    image.src = url;
 
-  image.onload = () => {
-    ctx.clearRect(0, 0, canvas.width, canvas.height) // Clear previous image (optional)
-    ctx.drawImage(image, 0, 0, canvas.width, canvas.height)
-  }
-  extractColorsFromDataUrl(newUrl, 5)  // Extract top 5 colors
-  .then(colors => {
-    console.log('Extracted Colors:', colors);
-  })
-  .catch(error => {
-    console.error('Error extracting colors:', error);
-  });
-  image.onerror = () => {
-    console.error('Failed to load image from dataUrl')
-  }
+    image.onload = () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.save();
+    ctx.scale(-1, 1); // Flip horizontally
+    ctx.drawImage(image, -canvas.width, 0, canvas.width, canvas.height);
+    ctx.restore();
+
+    // Optional cleanup: release the object URL when done
+    URL.revokeObjectURL(url);
+    };
+
+    image.onerror = () => {
+    console.error('Failed to load image from file');
+    };
+
+    // Extract colors from the image file
+    const reader = new FileReader();
+    reader.onload = () => {
+    const dataUrl = reader.result as string;
+
+    const pantoneColor = (color => {
+        const result = new colorConverter({ hex: color, to: 'pantone' });
+        return result.color;
+    });
+
+    extractColorsFromDataUrl(dataUrl, 5)
+        .then(colors => {
+        props.modelValue.product_color_pallete = '';
+        const colorArr: string[] = [];
+
+        colors.forEach(color => {
+            const pantone = pantoneColor(color);
+            if (!colorArr.includes(pantone)) {
+            colorArr.push(pantone);
+            }
+        });
+
+        props.modelValue.product_color_pallete = colorArr.map(c => `Pantone ${c}`).join('\n');
+        })
+        .catch(err => {
+        console.error('Error extracting colors:', err);
+        });
+    };
+
+    reader.readAsDataURL(file);
 }
+
 const triggerFileInput = () => {
   if (fileInput.value) {
     fileInput.value.click()
   }
 }
-// const handleFileChange = async (event) => {
-//   const file = event.target.files[0];
-//   if (!file) return;
-
-//   props.modelValue.product_color_pallete="";
-//   // Convert File to Data URL
-//   const reader = new FileReader();
-//   reader.readAsDataURL(file);
-//   reader.onload = async () => {
-//     imageSrc.value = reader.result;
-
-//     // Wait for image to load, then extract colors
-//     const img = new Image();
-//     img.crossOrigin = "Anonymous";
-//     img.src = reader.result;
-//     img.onload = async () => {
-//       const colorThief = new ColorThief();
-//       colors.value = await colorThief.getPalette(img, 6); // Extract 6 colors
-//       console.log("Extracted Color Palette:", colors.value);
-//       colors.value.forEach((color, index) => {
-//         console.log(`Color ${index + 1}: ${color}`);
-//         props.modelValue.product_color_pallete+=(index > 0 ? "\n" : "")+`Color ${index + 1}: ${color}` ;
-//       });
-//     };
-//   };
-// };
 onMounted(async () => {
   regionOptions.value = await getRegionOptions();
 });
@@ -362,22 +376,16 @@ const handleFileChange = (event: Event) => {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {
     const file = input.files[0];
-    convertFileToDataUrl(file);
+    drawImageFromFile(file)
+    // convertFileToDataUrl(file);
     }
 };
-const convertFileToDataUrl = (file: File) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        // Return or store the Base64 string (Data URL)
-        imageSrc.value = reader.result as string;
-        extractColorsFromDataUrl(imageSrc.value)
-        console.log('Data URL:', imageSrc.value);  // Return or log the Data URL here
-      };
-      reader.onerror = (error) => {
-        console.error('Error reading file:', error);
-      };
-      reader.readAsDataURL(file);  // Read the file as a data URL (Base64)
-};
+onMounted(async () => {
+    regionOptions.value = await getRegionOptions();
+    provinceOptions.value = await getProvinceOption(props.modelValue.region);
+    cityOptions.value = await getCitiesOption(props.modelValue.province || props.modelValue.region);
+    barangayOptions.value=await getBarangayOption(props.modelValue.city)
 
+});
 
 </script>

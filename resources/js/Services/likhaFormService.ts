@@ -1,23 +1,25 @@
 // composables/useLikhaForm.ts
 import { ref, reactive, toRaw, computed, onMounted  } from 'vue';
-import { submitStepOne, insertOrUpdateStepTwo, insertOrUpdateStepThree, insertOrUpdateStepFour } from '@/Services/likhaFormApi';
+import { submitStepOne, insertOrUpdateStepTwo, insertOrUpdateStepThree, insertOrUpdateStepFour, insertOrUpdateStepFive } from '@/Services/likhaFormApi';
 import PersonalInformation from '@/pages/LikhaForm/PersonalInformation.vue'
 import FamilyBackground from '@/pages/LikhaForm/FamilyBackground.vue';
 import nonFormalEducation from '@/pages/LikhaForm/NonFormalEducation.vue';
 import ArtisanCrafts from '@/pages/LikhaForm/ArtisanCrafts.vue';
 import FormalEducation from '@/pages/LikhaForm/FormalEducation.vue';
-import { CheckIcon, UserIcon, HomeIcon, AcademicCapIcon, PaintBrushIcon } from '@heroicons/vue/24/solid';
+import { CheckIcon, UserIcon, HomeIcon, AcademicCapIcon, PaintBrushIcon, LockClosedIcon } from '@heroicons/vue/24/solid';
+import DataPrivacy from '@/pages/LikhaForm/DataPrivacy.vue';
 
 export function useLikhaForm(props) {
     const isLoading = ref(false);
     const activeStep = ref(props.personalInfo?props.personalInfo.current_step:0);
     const steps = ref([
-        { name: 'Personal Info', component: PersonalInformation, icon: UserIcon, active: activeStep.value!=0?false:true, details: 'Provide Personal information here' },
-        { name: 'Family background', component:FamilyBackground, icon: HomeIcon, active: activeStep.value!=1?false:true, details: 'Provide family background here' },
-        { name: 'Formal Education', icon: AcademicCapIcon, active: activeStep.value!=2?false:true, details: 'Provide educational information here' },
-        { name: 'Non-formal Education', icon: AcademicCapIcon, active: activeStep.value!=3?false:true, details: 'Provide educational information here' },
-        { name: 'Artisan and Craft', component: ArtisanCrafts,  icon: PaintBrushIcon, active: activeStep.value!=4?false:true, details: 'Provide artisan and crafts information here' },
-        { name: 'Other Art',  icon: PaintBrushIcon, active: activeStep.value!=5?false:true, details: "Provide information about the artisan's other artworks here" },
+        { name: 'Data Privacy', component: DataPrivacy, icon: LockClosedIcon, active: activeStep.value!=0?false:true, details: 'Provide Personal information here' },
+        { name: 'Personal Info', component: PersonalInformation, icon: UserIcon, active: activeStep.value!=1?false:true, details: 'Provide Personal information here' },
+        { name: 'Family background', component:FamilyBackground, icon: HomeIcon, active: activeStep.value!=2?false:true, details: 'Provide family background here' },
+        { name: 'Formal Education', icon: AcademicCapIcon, active: activeStep.value!=3?false:true, details: 'Provide educational information here' },
+        { name: 'Non-formal Education', icon: AcademicCapIcon, active: activeStep.value!=4?false:true, details: 'Provide educational information here' },
+        { name: 'Artisan and Craft', component: ArtisanCrafts,  icon: PaintBrushIcon, active: activeStep.value!=5?false:true, details: 'Provide artisan and crafts information here' },
+        { name: 'Other Art',  icon: PaintBrushIcon, active: activeStep.value!=6?false:true, details: "Provide information about the artisan's other artworks here" },
     ]);
     const personalInfoForm = reactive({
         first_name: props.personalInfo?.first_name || "",
@@ -33,24 +35,25 @@ export function useLikhaForm(props) {
         street: props.personalInfo?.street || "",
     });
     const ArtisanCraftsInfo=reactive({
-        artisan_name: "",
-        indiginous_people_community:"",
-        other_ipc:"",
-        primary_art:"",
-        product_name: "",
-        product_material:"",
-        associative_narrative_of_production:"",
-        product_making_process:"",
+        
+        artisan_name: props.artisan.artisan_info?.artisan_name || "",
+        indiginous_people_community:props.artisan.artisan_info?.indegenous_people_community||"",
+        other_ipc: props.artisan.artisan_info?.other_indegenous_people_community||"",
+        primary_art:props.primaryCraft?.specialization_name || "",
+        product_name: props.primaryCraft?.specialization_name || "",
+        product_material:props.primaryCraft?.specialization_name || "",
+        associative_narrative_of_production:props.primaryCraft?.associative_narrative_of_production || "",
+        product_making_process:props.primaryCraft?.product_making_process || "",
         product_making_process_file:null,
         product_image:null,
-        product_color_pallete: null,
-        vocabularies:"",
+        product_color_pallete: props.primaryCraft?.product_image_pallete || "",
+        vocabularies:props.primaryCraft?.vocabularies || "",
         vocabularies_file:null,
-        region: "",
-        province: "",
-        city: "",
-        barangay: "",
-        sitio: "",
+        region: props.primaryCraft?.region || "",
+        province: props.primaryCraft?.province || "",
+        city: props.primaryCraft?.city_municipality || "",
+        barangay: props.primaryCraft?.barangay || "",
+        sitio: props.primaryCraft?.sitio || "",
     });
 
 
@@ -65,7 +68,8 @@ export function useLikhaForm(props) {
     let originalFamilyMembers = reactive([]);
     let originalFormalEduc = reactive([]);
     let originalNonFormalEduc = reactive([]);
-   
+    let OriginalArtisanCraftsInfo = reactive({ ...ArtisanCraftsInfo });
+
     const getMembers = (() => {
         if (props.family_background?.family_backgrounds?.length) { 
             familyMembers.value = props.family_background.family_backgrounds.map(member => ({
@@ -146,6 +150,15 @@ export function useLikhaForm(props) {
             isLoading.value=false
         });
     });
+    const createOrUpdateArtisanForm=(()=>{
+        insertOrUpdateStepFive(toRaw(ArtisanCraftsInfo), props.personalInfo.id).then((response)=>{
+            if(response.status!="422")
+            {
+                nextAction();
+            }
+            isLoading.value=false
+        });
+    });
     const isFamilyBgEdited = (() => {
         if (!familyMembers.value || !originalFamilyMembers || familyMembers.value.length !== originalFamilyMembers.length) {
             return true; // Assuming it's edited if lengths don't match
@@ -198,11 +211,21 @@ export function useLikhaForm(props) {
             (key) => personalInfoForm[key] !== props.personalInfo?.[key]
         );
     });
-
+    
+    const isArtisanInfoEdited = (() => {
+        const currentValues = toRaw(OriginalArtisanCraftsInfo);
+        for (const key in ArtisanCraftsInfo) {
+            if (ArtisanCraftsInfo[key] !== currentValues[key]) {
+                console.log(`Changed: ${key}`);
+                return true;
+            }
+        }
+        return false;
+    });
     const nextStep = (() => {
         isLoading.value=true
         switch (activeStep.value) {
-            case 0:
+            case 1:
                 if(isPersonalInfoEdited.value)
                 {
                     submitStepOneForm();
@@ -212,7 +235,7 @@ export function useLikhaForm(props) {
                     isLoading.value=false
                 }
                 break;
-            case 1:
+            case 2:
                 if(isFamilyBgEdited())
                 {
                     insertOrUpdateStepTwoForm();
@@ -222,7 +245,7 @@ export function useLikhaForm(props) {
                     isLoading.value=false
                 }
                 break;
-            case 2:
+            case 3:
                 if(isFormalEducEdited())
                 {
                     insertOrUpdateStepThreeForm();
@@ -232,7 +255,7 @@ export function useLikhaForm(props) {
                     isLoading.value=false
                 }
                 break;
-            case 3:
+            case 4:
                 if(isNonFormalEducEdited())
                 {
                     insertOrUpdateStepFourForm();
@@ -242,7 +265,19 @@ export function useLikhaForm(props) {
                     isLoading.value=false
                 }
                 break;
+            case 5:
+                if(isArtisanInfoEdited())
+                {
+                    createOrUpdateArtisanForm()
+                }
+                else{
+                    nextAction();
+                    isLoading.value=false
+                }
+                break;
             default:
+                nextAction();
+                isLoading.value=false
                 console.log(familyMembers)
                 break;
         }

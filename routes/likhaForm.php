@@ -10,5 +10,6 @@ Route::middleware('guest')->prefix('form')->group(function () {
     Route::post('/step_two/{personalInfo}', [LikhaFormController::class, 'insertOrUpdateFamilybackground'])->name('form.insertOrUpdateFamilybackground');
     Route::post('/step_three/{personalInfo}', [LikhaFormController::class, 'createOrUpdateFormalEducation'])->name('form.createOrUpdateFormalEducation');
     Route::post('/step_four/{personalInfo}', [LikhaFormController::class, 'createOrUpdateNonFormalEducation'])->name('form.createOrUpdateNonFormalEducation');
+    Route::post('/step_five/{personalInfo}', [LikhaFormController::class, 'createOrUpdateArtisan'])->name('form.createOrUpdateArtisan');
     
 });
