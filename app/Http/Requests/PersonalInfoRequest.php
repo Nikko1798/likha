@@ -46,9 +46,9 @@ class PersonalInfoRequest extends FormRequest
             
             
             'region' => ['required', 'string', 'max:255'],
-            'province' => ['required', 'string', 'max:255'],
-            'city_municipality' => ['required', 'string', 'max:255'],
-            'barangay' => ['required', 'string', 'max:255'],
+            'province' => ['nullable', 'string', 'max:255'],
+            'city_municipality' => ['nullable', 'string', 'max:255'],
+            'barangay' => ['nullable', 'string', 'max:255'],
             'street' => ['required', 'string', 'max:255'],
             //
 

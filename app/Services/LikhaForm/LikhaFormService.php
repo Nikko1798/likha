@@ -30,7 +30,7 @@ class LikhaFormService
             
             $personalInfo = PersonalInformation::create([
                 'uuid' => $uuid,
-                'current_step'=> 1,
+                'current_step'=> 2,
                 'first_name' => $request['first_name'],
                 'middle_name' => $request['middle_name'],
                 'last_name' => $request['last_name'],
@@ -41,10 +41,10 @@ class LikhaFormService
                 'place_of_birth' => $request['place_of_birth'],
             ]);
             $personalInfo->addresses()->create([
-                'region'=>$region->name,
-                'province' => $province->name,
-                'city_municipality' => $city->name,
-                'barangay' => $barangay->name,
+                'region'=>$region?->name ?? "",
+                'province' => $province?->name ?? "",
+                'city_municipality' => $city?->name ?? "",
+                'barangay' => $barangay?->name ?? "",
                 'street' => $request['street']
             ]);
             $step_one = $personalInfo->load('addresses');
@@ -78,10 +78,10 @@ class LikhaFormService
                 'place_of_birth' => $request['place_of_birth'],
             ]);
             $personalInfo->addresses()->first()->update([
-                'region' => $region->name,
-                'province' => $province->name,
-                'city_municipality' => $city->name,
-                'barangay' => $barangay->name,
+                'region' => $region?->name ?? "",
+                'province' => $province?->name ?? "",
+                'city_municipality' => $city?->name ?? "",
+                'barangay' => $barangay?->name ?? "",
                 'street' => $request['street']
             ]);
             $step_one = $personalInfo->load('addresses');
@@ -188,7 +188,7 @@ class LikhaFormService
                             'region'=>$request['region'],
                             'province'=>$request['province'],
                             'city_municipality'=>$request['city'],
-                            'barangay'=>$request['barangay'],
+                            'sitio'=>$request['sitio'],
                             'associative_narrative_of_production'=>$request['associative_narrative_of_production'],
                             'product_making_process'=>$request['product_making_process'],
                             'product_making_process_file'=>$request['product_making_process_file'],

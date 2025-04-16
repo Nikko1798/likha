@@ -36,9 +36,9 @@ export function useLikhaForm(props) {
     });
     const ArtisanCraftsInfo=reactive({
         
-        artisan_name: props.artisan.artisan_info?.artisan_name || "",
-        indiginous_people_community:props.artisan.artisan_info?.indegenous_people_community||"",
-        other_ipc: props.artisan.artisan_info?.other_indegenous_people_community||"",
+        artisan_name: props.artisan?.artisan_info?.artisan_name || "",
+        indiginous_people_community:props.artisan?.artisan_info?.indegenous_people_community||"",
+        other_ipc: props.artisan?.artisan_info?.other_indegenous_people_community||"",
         primary_art:props.primaryCraft?.specialization_name || "",
         product_name: props.primaryCraft?.specialization_name || "",
         product_material:props.primaryCraft?.specialization_name || "",
@@ -69,6 +69,7 @@ export function useLikhaForm(props) {
     let originalFormalEduc = reactive([]);
     let originalNonFormalEduc = reactive([]);
     let OriginalArtisanCraftsInfo = reactive({ ...ArtisanCraftsInfo });
+    let OriginalPersonalINfo=reactive({...personalInfoForm})
 
     const getMembers = (() => {
         if (props.family_background?.family_backgrounds?.length) { 
@@ -206,12 +207,21 @@ export function useLikhaForm(props) {
             );
           });
     });
-    const isPersonalInfoEdited = computed(() => {
-        return Object.keys(personalInfoForm).some(
-            (key) => personalInfoForm[key] !== props.personalInfo?.[key]
-        );
-    });
-    
+    // const isPersonalInfoEdited = computed(() => {
+    //     return Object.keys(personalInfoForm).some(
+    //         (key) => personalInfoForm[key] !== props.personalInfo?.[key]
+    //     );
+    // });
+    const isPersonalInfoEdited=(()=>{
+        const currentValues=toRaw(OriginalPersonalINfo);
+        for (const key in personalInfoForm) {
+            if (personalInfoForm[key] !== currentValues[key]) {
+                console.log(`Changed: ${key}`);
+                return true;
+            }
+        }
+        return false;
+    })
     const isArtisanInfoEdited = (() => {
         const currentValues = toRaw(OriginalArtisanCraftsInfo);
         for (const key in ArtisanCraftsInfo) {
@@ -226,7 +236,8 @@ export function useLikhaForm(props) {
         isLoading.value=true
         switch (activeStep.value) {
             case 1:
-                if(isPersonalInfoEdited.value)
+                alert(isPersonalInfoEdited())
+                if(isPersonalInfoEdited())
                 {
                     submitStepOneForm();
                 }
