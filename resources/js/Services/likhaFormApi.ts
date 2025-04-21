@@ -108,3 +108,34 @@ export const insertOrUpdateStepFive=(ArtisanCraftsInfo, id)=>{
       return error;
   });
 };
+
+export const insertOrUpdateStepSix=(artsOrCraft, id)=>{
+  // form.createOrUpdateOtherArts
+  const formData = new FormData();
+  artsOrCraft.forEach((item, index) => {
+    for (const key in item) {
+      const value = item[key];
+  
+      // Set key as: 0[art_or_craft_name], 0[product_making_process_file], etc.
+      const formKey = `${index}[${key}]`;
+  
+      if (value instanceof File || value instanceof Blob) {
+        formData.append(formKey, value);
+      } else if (value !== null && value !== undefined) {
+        formData.append(formKey, value);
+      }
+    }
+  });
+  return axios.post(route('form.createOrUpdateOtherArts', {id:id}), formData)
+  .then((response) => {
+      success("Step three details inserted successfully")
+      router.visit(route('form.thankyouPage', { uuid: response.data.uuid }));
+      return response.data;
+  })
+  .catch((error) => {
+    console.log(error);
+    let errorStr=getErrorStr(error.response.data.errors);
+      warning(errorStr)
+      return error;
+  });
+}

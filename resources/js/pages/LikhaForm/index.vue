@@ -83,10 +83,10 @@ onMounted(()=>{
                 </button>
                 <button
                     @click="nextStep"
-                    :disabled="activeStep === steps.length - 1"
                     class="px-4 py-2 bg-red-500 text-white rounded disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                    Next
+                {{ activeStep === steps.length - 1 ? 'Submit' : 'Next' }}
+                    
                 </button>
             </div>
         </div>

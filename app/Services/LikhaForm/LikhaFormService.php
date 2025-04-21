@@ -166,6 +166,18 @@ class LikhaFormService
       
         try{
             DB::transaction(function () use ($personalInfo, $request) {
+                $region=AddressDb::select('name')->where('codename', 'REGION')
+                ->where('codevalue', $request['region'])->first();
+
+                $province=AddressDb::select('name')->where('codename', 'PROVINCE')
+                ->where('codevalue', $request['province'])->first();
+
+                $city=AddressDb::select('name')
+                ->where('codename', 'CITY')->where('codevalue', $request['city'])->first();
+
+                $barangay=AddressDb::select('name')
+                ->where('codename', 'BARANGAY')->where('codevalue', $request['barangay'])->first();
+            
                 if($personalInfo->current_step<=5){
                     $personalInfo->update(['current_step'=>6]);
                 }
@@ -179,24 +191,26 @@ class LikhaFormService
                             'other_indegenous_people_community' => $request['other_ipc']
                         ]   
                     );
-                    $primaryCraft=Craft::updateOrCreate(
+                    $primaryCraft = Craft::updateOrCreate(
                         ['personal_information_id' => $personalInfo->id],
                         [
                             'personal_information_id' => $personalInfo->id,
-                            'specialization_rank'=>1,
-                            'specialization_name'=>$request['primary_art'],
-                            'region'=>$request['region'],
-                            'province'=>$request['province'],
-                            'city_municipality'=>$request['city'],
-                            'sitio'=>$request['sitio'],
-                            'associative_narrative_of_production'=>$request['associative_narrative_of_production'],
-                            'product_making_process'=>$request['product_making_process'],
-                            'product_making_process_file'=>$request['product_making_process_file'],
-                            'product_image_pattern'=>self::uploadArtisanProductImage($request, $artisan),
-                            'product_image_pallete'=>$request['product_color_pallete'],
-                            'vocabularies'=>$request['vocabularies'],
-                            'vocabularies_file'=>$request['vocabularies_file'],
+                            'specialization_rank' => 1,
+                            'specialization_name' => $request['primary_art'],
+                            'region' => $region?->name ?? "",
+                            'province' => $province?->name ?? "",
+                            'barangay' => $city?->barangay ?? "",
+                            'province' => $province?->name ?? "",
+                            'sitio' => $request['sitio'],
+                            'associative_narrative_of_production' => $request['associative_narrative_of_production'],
+                            'product_making_process' => $request['product_making_process'],
+                            'product_making_process_file' => self::uploadProductMakingProcessFile($request, $artisan, 1) ?: ($primaryCraft->product_making_process_file ?? null),
+                            'product_image_pattern' => self::uploadArtisanProductImage($request, $artisan) ?: ($primaryCraft->product_image_pattern ?? null),
+                            'product_image_pallete' => $request['product_color_pallete'],
+                            'vocabularies' => $request['vocabularies'],
+                            'vocabularies_file' => self::uploadVocabulariesFile($request, $artisan) ?: ($primaryCraft->vocabularies_file ?? null),
                         ]
+                                        
                     );
                     
                     DB::commit();
@@ -219,6 +233,101 @@ class LikhaFormService
             }
             $path = $file->storeAs($folder, $filename, 'public');
             return $filename;
+        }
+        else{
+            return null;
+        }
+    }
+    function uploadProductMakingProcessFile($request, $artisan, $rank){
+        // product_making_process_file
+        if ($request->hasFile('product_making_process_file')) {
+            $file = $request->file('product_making_process_file');
+            $filename = 'product_making_process_' . $artisan->id .  '_' . $rank . '.' . $file->getClientOriginalExtension();
+            $folder='uploads';
+            $fullPath = $folder . '/' . $filename;
+            if(Storage::disk('public')->exists($fullPath))
+            {   
+                Storage::disk('public')->delete($fullPath);
+            }
+            $path = $file->storeAs($folder, $filename, 'public');
+            return $filename;
+        }
+        else{
+            return null;
+        }
+    }
+    function uploadVocabulariesFile($request, $artisan){
+        // product_making_process_file
+        if ($request->hasFile('vocabularies_file')) {
+            $file = $request->file('vocabularies_file');
+            $filename = 'vocabularies_' . $artisan->id . '.' . $file->getClientOriginalExtension();
+            $folder='uploads';
+            $fullPath = $folder . '/' . $filename;
+            if(Storage::disk('public')->exists($fullPath))
+            {   
+                Storage::disk('public')->delete($fullPath);
+            }
+            $path = $file->storeAs($folder, $filename, 'public');
+            return $filename;
+        }
+        else{
+            return null;
+        }
+    }
+
+    function createOrUpdateOtherArts($personalInfo, $request)
+    {
+        try{
+            DB::transaction(function () use ($personalInfo ,$request){
+            
+                
+                $artisan=$personalInfo->artisan_info;
+                $otherArts=$request->all(); 
+                if($personalInfo->current_step<=6){
+                    $personalInfo->update(['current_step'=>7]);
+                }
+                if (!empty($otherArts)) {
+                
+                    Craft::where('personal_information_id', $personalInfo->id)
+                    ->where('specialization_rank', '>', 1)->delete();
+                    $counter=1;
+                    foreach($otherArts as $item)
+                    {
+                        $region=AddressDb::select('name')->where('codename', 'REGION')
+                        ->where('codevalue', $item['region'])->first();
+        
+                        $province=AddressDb::select('name')->where('codename', 'PROVINCE')
+                        ->where('codevalue', $item['province'])->first();
+        
+                        $city=AddressDb::select('name')
+                        ->where('codename', 'CITY')->where('codevalue', $item['city'])->first();
+        
+                        $barangay=AddressDb::select('name')
+                        ->where('codename', 'BARANGAY')->where('codevalue', $item['barangay'])->first();
+                    
+                        $counter++;
+                        $uploadedFile = self::uploadProductMakingProcessFile($request, $artisan, $counter);
+                        $craft=Craft::create([
+                            'personal_information_id'=>$personalInfo->id,
+                            'specialization_rank'=>$counter,
+                            'specialization_name'=>$item['art_or_craft_name'],
+                            'associative_narrative_of_production'=>$item['related_practices'],
+                            'product_making_process'=>$item['product_making_process'],
+                            'product_making_process_file'=>$uploadedFile,
+                            'region'=>$region?->name ?? "",
+                            'province'=>$province?->name ?? "",
+                            'barangay'=>$barangay?->name ?? "",
+                            'city_municipality'=>$city?->name ?? "",
+                            'sitio'=>$item['sitio'],
+                        ]);
+                    }
+                }
+            });
+            return $personalInfo;
+        }
+        catch(Exception $e)
+        {
+            return ResponseHelper::error($e, 500);
         }
     }
 }

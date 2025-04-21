@@ -27,7 +27,7 @@
             />
         </div>
         <div class="sm:col-span-8">
-            <fwb-file-input v-model="art.product_making_process_file" label="Product making process file" size="sm" />
+            <fwb-file-input @change="event=>handleFileProductMakingProcess(index, event)" v-model="art.product_making_process_file" label="Product making process file" size="sm" />
         </div>
         <div class="sm:col-span-4">
             <fwb-select
@@ -86,6 +86,13 @@ const barangayOptions = ref([]);
 
 
 
+const handleFileProductMakingProcess = (index, event: Event) => {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0] ?? null;
+
+    props.artsOrCraft[index].product_making_process_file = file;
+    console.log(props.artsOrCraft[index])
+};
 
 onMounted(async () => {
     regionOptions.value = await getRegionOptions();

@@ -1,6 +1,7 @@
 // composables/useLikhaForm.ts
 import { ref, reactive, toRaw, computed, onMounted  } from 'vue';
-import { submitStepOne, insertOrUpdateStepTwo, insertOrUpdateStepThree, insertOrUpdateStepFour, insertOrUpdateStepFive } from '@/Services/likhaFormApi';
+import { submitStepOne, insertOrUpdateStepTwo, insertOrUpdateStepThree,
+     insertOrUpdateStepFour, insertOrUpdateStepFive, insertOrUpdateStepSix } from '@/Services/likhaFormApi';
 import PersonalInformation from '@/pages/LikhaForm/PersonalInformation.vue'
 import FamilyBackground from '@/pages/LikhaForm/FamilyBackground.vue';
 import nonFormalEducation from '@/pages/LikhaForm/NonFormalEducation.vue';
@@ -8,7 +9,8 @@ import ArtisanCrafts from '@/pages/LikhaForm/ArtisanCrafts.vue';
 import FormalEducation from '@/pages/LikhaForm/FormalEducation.vue';
 import { CheckIcon, UserIcon, HomeIcon, AcademicCapIcon, PaintBrushIcon, LockClosedIcon } from '@heroicons/vue/24/solid';
 import DataPrivacy from '@/pages/LikhaForm/DataPrivacy.vue';
-
+import { usePage } from '@inertiajs/vue3';
+import type { Page } from '@inertiajs/core';
 export function useLikhaForm(props) {
     const isLoading = ref(false);
     const activeStep = ref(props.personalInfo?props.personalInfo.current_step:0);
@@ -56,12 +58,12 @@ export function useLikhaForm(props) {
         sitio: props.primaryCraft?.sitio || "",
     });
 
-
+    
     const nonFormalEducations=ref([{transmission: "", other_transmission:"", mentor: "", ordinal_generation: "", place_of_mentoring: "", disableTransmission: true}])
     const FormalEducations=ref([{education_level:"", course_or_study: "", school_name:"", years_attended: ""}])
     const artsOrCraft=ref([{art_or_craft_name:"", related_practices:"", product_making_process:"",
-    product_making_process_file:null, region: "",
-        province: "",  city: "",  barangay: "", sitio: "",}])
+        product_making_process_file:null, region: "",
+        province: "",  city: "",  barangay: "", sitio: ""}])
         
     const familyMembers = ref([{ family_member_name: "", relation: "" }]);
 
@@ -155,11 +157,22 @@ export function useLikhaForm(props) {
         insertOrUpdateStepFive(toRaw(ArtisanCraftsInfo), props.personalInfo.id).then((response)=>{
             if(response.status!="422")
             {
+                Object.assign(OriginalArtisanCraftsInfo, { ...ArtisanCraftsInfo })
                 nextAction();
             }
             isLoading.value=false
         });
     });
+    const insertOrUpdateOtherArtsForm=(()=>{
+        console.log(toRaw(artsOrCraft.value))
+        insertOrUpdateStepSix(toRaw(artsOrCraft.value), props.personalInfo.id).then((response)=>{
+            if(response.status!="422")
+            {
+                nextAction();
+            }
+            isLoading.value=false
+        });
+    })
     const isFamilyBgEdited = (() => {
         if (!familyMembers.value || !originalFamilyMembers || familyMembers.value.length !== originalFamilyMembers.length) {
             return true; // Assuming it's edited if lengths don't match
@@ -207,11 +220,6 @@ export function useLikhaForm(props) {
             );
           });
     });
-    // const isPersonalInfoEdited = computed(() => {
-    //     return Object.keys(personalInfoForm).some(
-    //         (key) => personalInfoForm[key] !== props.personalInfo?.[key]
-    //     );
-    // });
     const isPersonalInfoEdited=(()=>{
         const currentValues=toRaw(OriginalPersonalINfo);
         for (const key in personalInfoForm) {
@@ -226,24 +234,33 @@ export function useLikhaForm(props) {
         const currentValues = toRaw(OriginalArtisanCraftsInfo);
         for (const key in ArtisanCraftsInfo) {
             if (ArtisanCraftsInfo[key] !== currentValues[key]) {
-                console.log(`Changed: ${key}`);
+                console.log(`Changed: ${ArtisanCraftsInfo[key]}`)
+                console.log(`Changed2: ${currentValues[key]}`);
                 return true;
             }
         }
         return false;
     });
     const nextStep = (() => {
+        const page = usePage() as Page;
+        const currentRoute: string = page.url;
         isLoading.value=true
         switch (activeStep.value) {
             case 1:
-                alert(isPersonalInfoEdited())
-                if(isPersonalInfoEdited())
+                if(currentRoute.includes('likha/form/draft'))
                 {
-                    submitStepOneForm();
+                    if(isPersonalInfoEdited())
+                    {
+                        submitStepOneForm();
+                    }
+                    else{
+                        nextAction();
+                        isLoading.value=false
+                    }
                 }
                 else{
-                    nextAction();
-                    isLoading.value=false
+                    submitStepOneForm();
+
                 }
                 break;
             case 2:
@@ -286,6 +303,11 @@ export function useLikhaForm(props) {
                     isLoading.value=false
                 }
                 break;
+            case 6:
+                
+                insertOrUpdateOtherArtsForm()
+                break;
+                
             default:
                 nextAction();
                 isLoading.value=false

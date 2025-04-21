@@ -78,7 +78,7 @@
                         />
                     </div>
                     <div class="sm:col-span-8">
-                        <fwb-file-input v-model="modelValue.product_making_process_file" label="Product making process file" size="sm" />
+                        <fwb-file-input @change="handleFileProductMakingProcess" v-model="modelValue.product_making_process_file" label="Product making process file" size="sm" />
                     </div>
                     
                     <div class="sm:col-span-12">
@@ -94,7 +94,7 @@
                 class="grid grid-cols-1 sm:grid-cols-12 gap-3"
                 >
                     <div class="sm:col-span-8">
-                        <fwb-file-input v-model="modelValue.vocabularies_file" label="Vocabularies file" size="sm" />
+                        <fwb-file-input @change="handleVocabulariesFile" v-model="modelValue.vocabularies_file" label="Vocabularies file" size="sm" />
                     </div>
                     <div class="sm:col-span-8">
                         <fwb-file-input @change="handleFileChange" v-model="modelValue.product_image" label="Product Image file" size="sm" />
@@ -380,6 +380,28 @@ const handleFileChange = (event: Event) => {
     // convertFileToDataUrl(file);
     }
 };
+const handleFileProductMakingProcess=((event: Event)=>{
+
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+        const file = input.files[0];
+        props.modelValue.product_making_process_file=file
+    }
+    else{
+        props.modelValue.product_making_process_file=null
+    }
+})
+const handleVocabulariesFile=((event: Event)=>{
+
+const input = event.target as HTMLInputElement;
+if (input.files && input.files[0]) {
+    const file = input.files[0];
+    props.modelValue.vocabularies_file=file
+}
+else{
+    props.modelValue.product_making_process_file=null
+}
+})
 onMounted(async () => {
     regionOptions.value = await getRegionOptions();
     provinceOptions.value = await getProvinceOption(props.modelValue.region);
