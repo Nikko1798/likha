@@ -5,6 +5,9 @@
     style="background-image: url('/likha/images/ty_bg.jpg')"
   >
     <div class="bg-white bg-opacity-90 shadow-lg rounded-2xl p-8 max-w-md text-center">
+      <!-- Logo on top -->
+      <img src="/likha/images/logo.png" alt="Logo" class="mx-auto mb-4" style="height: 100px" />
+
       <h2 class="text-2xl font-bold text-red-500 mb-2">Thank you! 🎉</h2>
       <p class="text-gray-700 mb-4">We’ve received your response. We appreciate your time and effort!</p>
       <button
@@ -16,7 +19,6 @@
     </div>
   </div>
 </template>
-
 <script setup>
 import { ref } from 'vue'
 import { router } from '@inertiajs/vue3'

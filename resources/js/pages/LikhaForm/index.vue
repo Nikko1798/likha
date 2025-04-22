@@ -39,7 +39,8 @@ onMounted(()=>{
         <div class="p-2">
             <!-- Image at the top of the stepper -->
             <div class="h-32 w-full bg-cover bg-center rounded-md" 
-                style="background-image: url('https://lh5.googleusercontent.com/TxS-VLhP_f5OuQRJBy3Ho8aXBQWPRu2Oea91olVvEO58Qp7N4HprJvU7MUu0YHHYwPKmlwbzPwFth7cYIaO9BqAsjhJlGLeWBkBqZfFc6i_lH6xVzMIXG9cVe4umNnMf9uQUBUpdH0Q=w782');">
+            style="background-image: url('/likha/images/LikhaBanner.jpg')"
+            >
             </div>
             <ol class="relative mt-4 w-auto min-w-max text-gray-500 border-l border-gray-300 dark:border-gray-700 dark:text-gray-400 hidden md:block pr-6">
                 <li v-for="(step, index) in steps" :key="index" class="mb-10 ml-6">
