@@ -27,6 +27,7 @@ export function useLikhaForm(props) {
         first_name: props.personalInfo?.first_name || "",
         middle_name: props.personalInfo?.middle_name || "",
         last_name: props.personalInfo?.last_name || "",
+        other_name: props.personalInfo?.other_name || "",
         gender: props.personalInfo?.gender || "",
         age_group: props.personalInfo?.age_group || "",
         place_of_birth: props.personalInfo?.place_of_birth || "",
@@ -42,8 +43,8 @@ export function useLikhaForm(props) {
         indiginous_people_community:props.artisan?.artisan_info?.indegenous_people_community||"",
         other_ipc: props.artisan?.artisan_info?.other_indegenous_people_community||"",
         primary_art:props.primaryCraft?.specialization_name || "",
-        product_name: props.primaryCraft?.specialization_name || "",
-        product_material:props.primaryCraft?.specialization_name || "",
+        product_name: props.primaryCraft?.product_name || "",
+        product_material:props.primaryCraft?.product_material || "",
         associative_narrative_of_production:props.primaryCraft?.associative_narrative_of_production || "",
         product_making_process:props.primaryCraft?.product_making_process || "",
         product_making_process_file:null,
@@ -56,14 +57,22 @@ export function useLikhaForm(props) {
         city: props.primaryCraft?.city_municipality || "",
         barangay: props.primaryCraft?.barangay || "",
         sitio: props.primaryCraft?.sitio || "",
+        other_specialization_name: props.primaryCraft?.other_specialization_name || "",
+        other_product_material: props.primaryCraft?.other_product_material || "",
+        other_associative_narrative_of_production: props.primaryCraft?.other_associative_narrative_of_production || ""
     });
 
     
     const nonFormalEducations=ref([{transmission: "", other_transmission:"", mentor: "", ordinal_generation: "", place_of_mentoring: "", disableTransmission: true}])
     const FormalEducations=ref([{education_level:"", course_or_study: "", school_name:"", years_attended: ""}])
-    const artsOrCraft=ref([{art_or_craft_name:"", related_practices:"", product_making_process:"",
+    const artsOrCraft=ref([{art_or_craft_name:"", related_practices:"", 
+        product_making_process:"",
         product_making_process_file:null, region: "",
-        province: "",  city: "",  barangay: "", sitio: ""}])
+        province: "",  city: "",  barangay: "", sitio: "",
+        other_specialization_name: "",
+        other_associative_narrative_of_production: "",
+        disableOtherSpecName: true, disableOtherNarative: true
+    }])
         
     const familyMembers = ref([{ family_member_name: "", relation: "" }]);
 

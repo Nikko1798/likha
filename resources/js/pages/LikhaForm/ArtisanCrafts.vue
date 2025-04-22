@@ -33,6 +33,11 @@
                             label="Primary Art and Craft Specialization"
                         />
                     </div>
+                    <div class="sm:col-span-6">
+                        <fwb-input v-model="modelValue.other_specialization_name" 
+                        label="Other" 
+                        placeholder="Other" size="sm" :disabled="disableOtherSpecialization"/>
+                    </div>
                 </div>
             </fieldset>
 
@@ -48,26 +53,35 @@
                 <div
                 class="grid grid-cols-1 sm:grid-cols-12 gap-3"
                 >
-                    <div class="sm:col-span-4">
+                    <div class="sm:col-span-12">
                         <fwb-input v-model="modelValue.product_name" 
                         label="Product name" 
                         placeholder="Enter the name of product" size="sm" />
                     </div>
                     
-                    <div class="sm:col-span-4">
+                    <div class="sm:col-span-3">
                         <fwb-select
-                            v-model="modelValue.productMaterial"
+                            v-model="modelValue.product_material"
                             :options="ipc"
                             label="Product Material"
                         />
                     </div>
-
-                    <div class="sm:col-span-4">
+                    <div class="sm:col-span-3">
+                        <fwb-input v-model="modelValue.other_product_material" 
+                        label="Other" 
+                        placeholder="Other" size="sm" :disabled="disableProductMaterial"/>
+                    </div>
+                    <div class="sm:col-span-3">
                         <fwb-select
                             v-model="modelValue.associative_narrative_of_production"
                             :options="relatedPracticeOptions"
                             label="Associative narrative of production"
                         />
+                    </div>
+                    <div class="sm:col-span-3">
+                        <fwb-input v-model="modelValue.other_associative_narrative_of_production" 
+                        label="Other" 
+                        placeholder="Other" size="sm" :disabled="disableOtherNarrative"/>
                     </div>
                     <div class="sm:col-span-12">
                         <fwb-textarea
@@ -195,6 +209,9 @@ import colorConverter from 'simple-color-converter'
 const props=defineProps(["modelValue"]);
 const emits=defineEmits(["update:modelValue"]);
 const disableOtherIpc = ref(true);
+const disableOtherSpecialization = ref(true);
+const disableProductMaterial = ref(true);
+const disableOtherNarrative = ref(true);
 const regionOptions = ref([]);
 const provinceOptions = ref([]);
 const cityOptions = ref([]);
@@ -285,7 +302,18 @@ watch(() => props.modelValue.indiginous_people_community,async (newIpc) => {
     props.modelValue.other_ipc="";
     newIpc==="OTHER" ? disableOtherIpc.value=false : disableOtherIpc.value=true;
 })
-
+watch(()=>props.modelValue.primary_art, async (newPrimary)=>{
+    props.modelValue.other_specialization_name="";
+    newPrimary==="OTHER" ? disableOtherSpecialization.value=false : disableOtherSpecialization.value=true;
+})
+watch(()=>props.modelValue.productMaterial, async (newproductMaterial)=>{
+    props.modelValue.other_product_material="";
+    newproductMaterial==="OTHER" ? disableProductMaterial.value=false : disableProductMaterial.value=true;
+})
+watch(()=>props.modelValue.associative_narrative_of_production, async (newNarrativeOfProd)=>{
+    props.modelValue.other_associative_narrative_of_production="";
+    newNarrativeOfProd==="OTHER" ? disableOtherNarrative.value=false : disableOtherNarrative.value=true;
+})
 watch(() => props.modelValue.region,async (newRegion) => {
     props.modelValue.province="";
     props.modelValue.city="";
@@ -409,5 +437,7 @@ onMounted(async () => {
     barangayOptions.value=await getBarangayOption(props.modelValue.city)
 
 });
+
+
 
 </script>

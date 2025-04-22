@@ -23,8 +23,10 @@ class OtherArtsReqeust extends FormRequest
     {
         return [
             //
-            '*.art_or_craft_name'=>'required|string|max:255',
+            '*.art_or_craft_name'=>'nullable|string|max:255',
+            '*.other_specialization_name'=>'nullable|string|max:255',
             '*.related_practices'=>'nullable|string|max:255',
+            '*.other_associative_narrative_of_production'=>'nullable|string|max:255',
             '*.product_making_process'=>'nullable|string|max:255',
             '*.product_making_process_file'=>'nullable|file|mimes:pdf,jpg,jpeg,png,txt,doc,docx|max:5120',
             '*.region'=>'nullable|string|max:255',

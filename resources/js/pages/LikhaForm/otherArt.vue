@@ -4,19 +4,29 @@
         :key="index"
         class="grid grid-cols-1 sm:grid-cols-12 gap-4 mt-4 p-4 border border-gray-300 shadow-lg rounded-lg"
     >
-        <div class="sm:col-span-6">
+        <div class="sm:col-span-4">
             <fwb-select
                 v-model="art.art_or_craft_name"
                 :options="artSpecializationOptions"
                 label="Art and Craft Specialization"
             />
         </div>
-        <div class="sm:col-span-6">
+        <div class="sm:col-span-4">
+            <fwb-input v-model="art.other_specialization_name" 
+            label="Other" 
+            placeholder="Other Specialization" size="sm"/>
+        </div>
+        <div class="sm:col-span-4">
             <fwb-select
                 v-model="art.related_practices"
                 :options="relatedPracticeOptions"
-                label="Any related practices before the process"
+                label="Related practices before the process"
             />
+        </div>
+        <div class="sm:col-span-4">
+            <fwb-input v-model="art.other_associative_narrative_of_production" 
+            label="Other" 
+            placeholder="Related Practices" size="sm" />
         </div>
         <div class="sm:col-span-12">
             <fwb-textarea
@@ -70,7 +80,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue';
+import { ref, watch, onMounted, toRaw } from 'vue';
 import { FwbInput, FwbSelect, FwbFileInput, FwbTextarea, FwbButton, FwbButtonGroup } from "flowbite-vue";
 import { getRegionOptions, getProvinceOption, getCitiesOption, getBarangayOption } from '@/helpers/addressHelpers';
 import {ipc, artsAndCraft, productMaterial, artSpecializationOptions, relatedPracticeOptions} from '@/helpers/dropdownHelper';
@@ -83,7 +93,6 @@ const regionOptions = ref([]);
 const provinceOptions = ref([]); // Array of province options for each art
 const cityOptions = ref([]);
 const barangayOptions = ref([]);
-
 
 
 const handleFileProductMakingProcess = (index, event: Event) => {

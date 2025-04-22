@@ -24,7 +24,7 @@ class NonFormalEducationRequest extends FormRequest
     {
         return [
             //
-            '*.transmission' => 'required|string|max:255',
+            '*.transmission' => 'nullable|string|max:255',
             '*.other_transmission' => 'nullable|string|max:255',
             '*.mentor' => 'nullable|string|max:255',
             '*.ordinal_generation' => 'nullable|string|max:255',

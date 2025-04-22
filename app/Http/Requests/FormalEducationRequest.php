@@ -23,10 +23,10 @@ class FormalEducationRequest extends FormRequest
     {
         return [
             //
-            '*.education_level' => 'required|string|max:255',
+            '*.education_level' => 'nullable|string|max:255',
             '*.course_or_study' => 'nullable|string|max:255',
-            '*.years_attended' => 'required|string|max:255',
-            '*.school_name' => 'required|string|max:255',
+            '*.years_attended' => 'nullable|string|max:255',
+            '*.school_name' => 'nullable|string|max:255',
         ];
     }
     public function attributes()

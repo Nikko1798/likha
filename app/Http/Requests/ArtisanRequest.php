@@ -40,6 +40,9 @@ class ArtisanRequest extends FormRequest
             'city' => 'string|max:255',
             'barangay' => 'string|max:255',
             'sitio' => 'string|max:255',
+            'other_specialization_name'=> 'nullable|string|max:255',
+            'other_product_material'=> 'nullable|string|max:255',
+            'other_associative_narrative_of_production'=> 'nullable|string|max:255',
         ];
     }
 }

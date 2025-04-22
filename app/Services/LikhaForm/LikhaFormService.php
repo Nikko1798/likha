@@ -199,7 +199,8 @@ class LikhaFormService
                             'specialization_name' => $request['primary_art'],
                             'region' => $region?->name ?? "",
                             'province' => $province?->name ?? "",
-                            'barangay' => $city?->barangay ?? "",
+                            'barangay' => $barangay?->name ?? "",
+                            'city_municipality' => $city?->name ?? "",
                             'province' => $province?->name ?? "",
                             'sitio' => $request['sitio'],
                             'associative_narrative_of_production' => $request['associative_narrative_of_production'],
@@ -209,6 +210,12 @@ class LikhaFormService
                             'product_image_pallete' => $request['product_color_pallete'],
                             'vocabularies' => $request['vocabularies'],
                             'vocabularies_file' => self::uploadVocabulariesFile($request, $artisan) ?: ($primaryCraft->vocabularies_file ?? null),
+                            
+                            'product_material'=>  $request['product_material'],
+                            'product_name'=>  $request['product_name'],
+                            'other_specialization_name'=>  $request['other_specialization_name'],
+                            'other_product_material'=>  $request['other_product_material'],
+                            'other_associative_narrative_of_production'=>  $request['other_associative_narrative_of_production'],
                         ]
                                         
                     );
@@ -311,7 +318,9 @@ class LikhaFormService
                             'personal_information_id'=>$personalInfo->id,
                             'specialization_rank'=>$counter,
                             'specialization_name'=>$item['art_or_craft_name'],
+                            'other_specialization_name'=>$item['other_specialization_name'],
                             'associative_narrative_of_production'=>$item['related_practices'],
+                            'other_associative_narrative_of_production'=>$item['other_associative_narrative_of_production'],
                             'product_making_process'=>$item['product_making_process'],
                             'product_making_process_file'=>$uploadedFile,
                             'region'=>$region?->name ?? "",
