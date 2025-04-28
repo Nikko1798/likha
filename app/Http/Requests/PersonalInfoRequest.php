@@ -22,6 +22,7 @@ class PersonalInfoRequest extends FormRequest
     public function attributes()
     {
         return [
+            'email'=> 'Email',
             'first_name' => 'First name', 
             'middle_name' => 'Middle name',
             'last_name' => 'Last name',
@@ -35,6 +36,7 @@ class PersonalInfoRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'email' => ['required', 'string', 'email', 'max:255'],
             'first_name' => ['required', 'string', 'max:255'],
             'middle_name' => ['nullable', 'string', 'max:255'],
             'last_name' => ['required', 'string', 'max:255'],

@@ -66,6 +66,7 @@
                             label="Product Material"
                         />
                     </div>
+                    
                     <div class="sm:col-span-3">
                         <fwb-input v-model="modelValue.other_product_material" 
                         label="Other" 
@@ -92,7 +93,8 @@
                         />
                     </div>
                     <div class="sm:col-span-8">
-                        <fwb-file-input @change="handleFileProductMakingProcess" v-model="modelValue.product_making_process_file" label="Product making process file" size="sm" />
+                        <fwb-file-input accept=".pdf, .jpg, .jpeg, .png, .txt, .doc, .docx, image/*" 
+                        @change="handleFileProductMakingProcess" v-model="modelValue.product_making_process_file" label="Product making process file" size="sm" />
                     </div>
                     
                     <div class="sm:col-span-12">
@@ -108,12 +110,12 @@
                 class="grid grid-cols-1 sm:grid-cols-12 gap-3"
                 >
                     <div class="sm:col-span-8">
-                        <fwb-file-input @change="handleVocabulariesFile" v-model="modelValue.vocabularies_file" label="Vocabularies file" size="sm" />
+                        <fwb-file-input accept=".pdf, .jpg, .jpeg, .png, .txt, .doc, .docx, image/*" @change="handleVocabulariesFile" v-model="modelValue.vocabularies_file" label="Vocabularies file" size="sm" />
                     </div>
-                    <div class="sm:col-span-8">
-                        <fwb-file-input @change="handleFileChange" v-model="modelValue.product_image" label="Product Image file" size="sm" />
+                    <!-- <div class="sm:col-span-8">
+                        <fwb-file-input @change="handleFileChange" v-model="modelValue.product_image" label="Product Image file" size="sm" accept="image/*"/>
                        
-                    </div>
+                    </div> -->
                 </div>
                 <div
                 class="grid grid-cols-1 sm:grid-cols-12 gap-3 mt-3"
@@ -134,7 +136,7 @@
                             <fwb-button color="purple" @click="openModal('cameraModal')">Open Camera</fwb-button>
                             <fwb-button color="alternative" @click="triggerFileInput">Select Image</fwb-button>
                         </fwb-button-group>
-                        <input type="file" ref="fileInput" @change="handleFileChange" style="display: none" />
+                        <input type="file" ref="fileInput" accept="image/*" @change="handleFileChange" style="display: none" />
     
                     </div>
 
@@ -244,15 +246,37 @@ function drawImageFromFile(file: File): void {
     image.src = url;
 
     image.onload = () => {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.save();
-    ctx.scale(-1, 1); // Flip horizontally
-    ctx.drawImage(image, -canvas.width, 0, canvas.width, canvas.height);
-    ctx.restore();
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.save();
 
-    // Optional cleanup: release the object URL when done
-    URL.revokeObjectURL(url);
+        // ⚡ Flip the canvas horizontally
+        // ctx.translate(canvas.width, 0);
+        // ctx.scale(-1, 1);
+
+        // ⚡ Calculate proper scaling
+        const imgRatio = image.width / image.height;
+        const canvasRatio = canvas.width / canvas.height;
+
+        let drawWidth = canvas.width;
+        let drawHeight = canvas.height;
+
+        if (imgRatio > canvasRatio) {
+            drawHeight = canvas.width / imgRatio;
+        } else {
+            drawWidth = canvas.height * imgRatio;
+        }
+
+        const x = (canvas.width - drawWidth) / 2;
+        const y = (canvas.height - drawHeight) / 2;
+
+        // ⚡ Finally draw
+        ctx.drawImage(image, x, y, drawWidth, drawHeight);
+
+        ctx.restore();
+
+        URL.revokeObjectURL(url);
     };
+
 
     image.onerror = () => {
     console.error('Failed to load image from file');
@@ -306,7 +330,7 @@ watch(()=>props.modelValue.primary_art, async (newPrimary)=>{
     props.modelValue.other_specialization_name="";
     newPrimary==="OTHER" ? disableOtherSpecialization.value=false : disableOtherSpecialization.value=true;
 })
-watch(()=>props.modelValue.productMaterial, async (newproductMaterial)=>{
+watch(()=>props.modelValue.product_material, async (newproductMaterial)=>{
     props.modelValue.other_product_material="";
     newproductMaterial==="OTHER" ? disableProductMaterial.value=false : disableProductMaterial.value=true;
 })

@@ -31,6 +31,7 @@ class LikhaFormService
             $personalInfo = PersonalInformation::create([
                 'uuid' => $uuid,
                 'current_step'=> 2,
+                'email' => $request['email'],
                 'first_name' => $request['first_name'],
                 'middle_name' => $request['middle_name'],
                 'last_name' => $request['last_name'],
@@ -68,6 +69,7 @@ class LikhaFormService
             ->where('codename', 'BARANGAY')->where('codevalue', $request['barangay'])->first();
             
             $personalInfo->update([
+                'email' => $request['email'],
                 'first_name' => $request['first_name'],
                 'middle_name' => $request['middle_name'],
                 'last_name' => $request['last_name'],

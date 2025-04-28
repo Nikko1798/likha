@@ -37,7 +37,8 @@
             />
         </div>
         <div class="sm:col-span-8">
-            <fwb-file-input @change="event=>handleFileProductMakingProcess(index, event)" v-model="art.product_making_process_file" label="Product making process file" size="sm" />
+            <fwb-file-input
+             accept=".pdf, .jpg, .jpeg, .png, .txt, .doc, .docx, image/*"  @change="event=>handleFileProductMakingProcess(index, event)" v-model="art.product_making_process_file" label="Product making process file" size="sm" />
         </div>
         <div class="sm:col-span-4">
             <fwb-select

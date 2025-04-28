@@ -24,6 +24,7 @@ export function useLikhaForm(props) {
         { name: 'Other Art',  icon: PaintBrushIcon, active: activeStep.value!=6?false:true, details: "Provide information about the artisan's other artworks here" },
     ]);
     const personalInfoForm = reactive({
+        email: props.personalInfo?.email || "",
         first_name: props.personalInfo?.first_name || "",
         middle_name: props.personalInfo?.middle_name || "",
         last_name: props.personalInfo?.last_name || "",

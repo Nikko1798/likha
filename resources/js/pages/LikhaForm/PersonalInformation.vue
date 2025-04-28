@@ -1,6 +1,12 @@
 <template>
     <div class="grid grid-cols-1 sm:grid-cols-12 gap-4 mt-10">
         <!-- First Name: Takes 4 out of 12 columns -->
+         
+        <div class="sm:col-span-12">
+            <fwb-input v-model="modelValue.email" type="email"
+            label="Emaiil address" 
+            placeholder="Enter your email" size="sm" />
+        </div>
         <div class="sm:col-span-3">
             <fwb-input v-model="modelValue.first_name" label="First name" placeholder="Enter your first name" size="sm" />
         </div>

@@ -34,7 +34,7 @@ class LikhaFormController extends Controller
             $currPersonalInfo=PersonalInformation::where('uuid', $uuid)->first();
             if(intval($currPersonalInfo->current_step)<=6)
             {
-                $personalInfo=PersonalInformation::select('personal_information.id', 'personal_information.uuid',
+                $personalInfo=PersonalInformation::select('personal_information.id','personal_information.email', 'personal_information.uuid',
                 'personal_information.first_name', 'personal_information.middle_name', 'personal_information.last_name',
                 'personal_information.name_extension', 'personal_information.other_name', 
                 'personal_information.gender','personal_information.age_group', 'personal_information.place_of_birth', 'personal_information.current_step',
