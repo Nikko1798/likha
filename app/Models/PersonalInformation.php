@@ -18,7 +18,7 @@ class PersonalInformation extends Model
         return $this->hasMany(Craft::class);
     }
     function educational_backgrounds(){
-        return $this->hasMany(EducationalBackgrounds::class);
+        return $this->hasMany(EducationalBackground::class);
     }
     function family_backgrounds(){
         return $this->hasMany(FamilyBackground::class);
