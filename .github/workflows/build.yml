@@ -47,6 +47,6 @@ jobs:
       run: |
         git config --global user.email "nikkoniel1@gmail.com"
         git config --global user.name "Nikko Niel Zamora"
-        git add public/build  # Adjust based on where your build files are (e.g., `public/build`)
+        git add -f public/build  # Force add the ignored build directory
         git commit -m "Build assets for production"
         git push origin main
