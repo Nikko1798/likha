@@ -1,0 +1,40 @@
+name: Build Assets on Merge to Main
+
+on:
+  push:
+    branches:
+      - main  # Trigger when code is pushed to `main` branch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest  # Use the latest version of Ubuntu
+
+    steps:
+    # Step 1: Checkout the code
+    - name: Checkout code
+      uses: actions/checkout@v3  # Checkout the code from the repository
+
+    # Step 2: Set up Node.js environment
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16'  # Specify the Node.js version you want (e.g., 16.x)
+
+    # Step 3: Install npm dependencies
+    - name: Install dependencies
+      run: |
+        npm install
+
+    # Step 4: Run npm build (production assets)
+    - name: Build assets for production
+      run: |
+        npm run production  # Adjust this if your build script is different (e.g., `npm run build`)
+
+    # Step 5: Commit and push build assets (optional)
+    - name: Commit and push build assets
+      run: |
+        git config --global user.email "your-email@example.com"
+        git config --global user.name "Your Name"
+        git add public/build  # Adjust based on where your build files are (e.g., `public/build`)
+        git commit -m "Build assets for production"
+        git push origin main
