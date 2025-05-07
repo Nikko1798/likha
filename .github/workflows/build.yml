@@ -14,23 +14,35 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3  # Checkout the code from the repository
 
-    # Step 2: Set up Node.js environment
+    # Step 2: Set up PHP environment
+    - name: Set up PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.4'  # Ensure you're using the required PHP version
+        tools: composer:v2
+
+    # Step 3: Install Composer dependencies
+    - name: Install Composer dependencies
+      run: |
+        composer install --no-interaction --prefer-dist --optimize-autoloader
+
+    # Step 4: Set up Node.js environment
     - name: Set up Node.js
       uses: actions/setup-node@v3
       with:
         node-version: '22'  # Specify the Node.js version you want (e.g., 16.x)
 
-    # Step 3: Install npm dependencies
-    - name: Install dependencies
+    # Step 5: Install npm dependencies
+    - name: Install npm dependencies
       run: |
         npm install
 
-    # Step 4: Run npm build (production assets)
+    # Step 6: Run npm build (production assets)
     - name: Build assets for production
       run: |
         npm run build  # Adjust this if your build script is different (e.g., `npm run build`)
 
-    # Step 5: Commit and push build assets (optional)
+    # Step 7: Commit and push build assets (optional)
     - name: Commit and push build assets
       run: |
         git config --global user.email "nikkoniel1@gmail.com"
