@@ -28,7 +28,7 @@ jobs:
     # Step 4: Run npm build (production assets)
     - name: Build assets for production
       run: |
-        npm run production  # Adjust this if your build script is different (e.g., `npm run build`)
+        npm run build  # Adjust this if your build script is different (e.g., `npm run build`)
 
     # Step 5: Commit and push build assets (optional)
     - name: Commit and push build assets
