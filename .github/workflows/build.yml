@@ -42,11 +42,11 @@ jobs:
       run: |
         npm run build  # Adjust this if your build script is different (e.g., `npm run build`)
 
-    # Step 7: Commit and push build assets (optional)
+    # Step 7: Commit and push build assets
     - name: Commit and push build assets
       run: |
         git config --global user.email "nikkoniel1@gmail.com"
         git config --global user.name "Nikko Niel Zamora"
         git add -f public/build  # Force add the ignored build directory
         git commit -m "Build assets for production"
-        git push origin main
+        git push https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/Nikko1798/likha.git HEAD:main
