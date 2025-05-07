@@ -26,7 +26,14 @@ export default defineConfig({
         alias: {
             '@': path.resolve(__dirname, './resources/js'),
             'ziggy-js': resolve(__dirname, 'vendor/tightenco/ziggy'),
+            // 🔥 Add these browser-safe polyfills
+            crypto: 'crypto-browserify',
+            stream: 'stream-browserify',
+            buffer: 'buffer',
         },
+    },
+    define: {
+        'process.env': {}, // prevents errors from packages expecting process.env
     },
     css: {
         postcss: {
