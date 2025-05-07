@@ -14,6 +14,7 @@ use App\Models\Craft;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Crypt;
 class LikhaFormService
 {
     function insertPersonalInfo($request)
@@ -31,12 +32,12 @@ class LikhaFormService
             $personalInfo = PersonalInformation::create([
                 'uuid' => $uuid,
                 'current_step'=> 2,
-                'email' => $request['email'],
-                'first_name' => $request['first_name'],
-                'middle_name' => $request['middle_name'],
-                'last_name' => $request['last_name'],
-                'name_extension' => $request['name_extension'],
-                'other_name' => $request['other_name'],
+                'email' => ($request['email']),
+                'first_name' => ($request['first_name']),
+                'middle_name' => ($request['middle_name']),
+                'last_name' => ($request['last_name']),
+                'name_extension' => ($request['name_extension']),
+                'other_name' => ($request['other_name']),
                 'gender' => $request['gender'],
                 'age_group' => $request['age_group'],
                 'place_of_birth' => $request['place_of_birth'],
@@ -46,7 +47,7 @@ class LikhaFormService
                 'province' => $province?->name ?? "",
                 'city_municipality' => $city?->name ?? "",
                 'barangay' => $barangay?->name ?? "",
-                'street' => $request['street']
+                'street' => ($request['street'])
             ]);
             $step_one = $personalInfo->load('addresses');
          
@@ -69,12 +70,12 @@ class LikhaFormService
             ->where('codename', 'BARANGAY')->where('codevalue', $request['barangay'])->first();
             
             $personalInfo->update([
-                'email' => $request['email'],
-                'first_name' => $request['first_name'],
-                'middle_name' => $request['middle_name'],
-                'last_name' => $request['last_name'],
-                'name_extension' => $request['name_extension'],
-                'other_name' => $request['other_name'],
+                'email' => Crypt::encrypt($request['email']),
+                'first_name' => ($request['first_name']),
+                'middle_name' => ($request['middle_name']),
+                'last_name' => ($request['last_name']),
+                'name_extension' => ($request['name_extension']),
+                'other_name' => ($request['other_name']),
                 'gender' => $request['gender'],
                 'age_group' => $request['age_group'],
                 'place_of_birth' => $request['place_of_birth'],
@@ -84,7 +85,7 @@ class LikhaFormService
                 'province' => $province?->name ?? "",
                 'city_municipality' => $city?->name ?? "",
                 'barangay' => $barangay?->name ?? "",
-                'street' => $request['street']
+                'street' => ($request['street'])
             ]);
             $step_one = $personalInfo->load('addresses');
          
