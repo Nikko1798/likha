@@ -61,7 +61,7 @@ const captureImage = () => {
 const startCamera = async () => {
   try {
     // Request access to the user's webcam
-    const cameraStream = await navigator.mediaDevices.getUserMedia({ video: true });
+    const cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
     
     // Set the video element's srcObject to the camera stream
     if (videoElement.value) {
