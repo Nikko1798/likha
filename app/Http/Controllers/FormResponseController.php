@@ -15,6 +15,7 @@ class FormResponseController extends Controller
     //
     public function index(): Response|RedirectResponse
     {
+        
         return Inertia::render('LikhaFormResponse/index');
     }
     public function likhaResponses(Request $request){
