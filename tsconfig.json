@@ -1,6 +1,5 @@
 {
     "compilerOptions": {
-        "types": ["vite/client"],
         /* Visit https://aka.ms/tsconfig to read more about this file */
 
         /* Projects */
