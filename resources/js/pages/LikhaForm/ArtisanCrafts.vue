@@ -62,7 +62,7 @@
                     <div class="sm:col-span-3">
                         <fwb-select
                             v-model="modelValue.product_material"
-                            :options="ipc"
+                            :options="productMaterial"
                             label="Product Material"
                         />
                     </div>
@@ -200,7 +200,7 @@
 import { ref, watch, onMounted } from 'vue';
 import { FwbInput, FwbSelect, FwbButtonGroup, FwbButton, FwbTextarea, FwbFileInput   } from "flowbite-vue";
 import {getRegionOptions, getProvinceOption, getCitiesOption, getBarangayOption} from '@/helpers/addressHelpers';
-import {ipc, artsAndCraft, relatedPracticeOptions} from '@/helpers/dropdownHelper';
+import {ipc, artsAndCraft, relatedPracticeOptions,  productMaterial} from '@/helpers/dropdownHelper';
 import ColorThief from "color-thief-ts";
 import Camera from './CameraForProduct.vue'
 import {useModal} from '@/helpers/modals';
