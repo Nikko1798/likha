@@ -18,7 +18,8 @@ if (!globalThis.crypto) {
   }
 
 export default defineConfig({
-  plugins: [
+  base: '/likha/build/',
+  plugins: [  
     laravel({
       input: ['resources/js/app.ts'],
       ssr: 'resources/js/ssr.ts',
