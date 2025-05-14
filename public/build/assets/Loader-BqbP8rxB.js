@@ -1,1 +1,0 @@
-import{_ as a}from"./_plugin-vue_export-helper-DlAUqK2U.js";import{a as r,f as s,o as t,b as d}from"./app-CRzu6Ufe.js";const n={key:0,class:"loader-overlay"},l={__name:"Loader",props:{loading:Boolean},setup(o){return(c,e)=>o.loading?(t(),r("div",n,e[0]||(e[0]=[d("div",{class:"loader"},null,-1)]))):s("",!0)}},p=a(l,[["__scopeId","data-v-335a293d"]]);export{p as L};
